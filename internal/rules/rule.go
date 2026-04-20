@@ -40,8 +40,12 @@ func Default() *Engine {
 	return &Engine{rules: []Rule{
 		&ForceMainRule{},
 		&DirectMainRule{},
+		&DirectPushMainRule{},
 		&BranchNameRule{},
 		&VagueCommitRule{},
+		&ConventionalCommitRule{},
+		&FridayAfternoonRule{},
+		&EmptyMergeMessageRule{},
 	}}
 }
 
