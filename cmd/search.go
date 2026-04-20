@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/devpulse-cli/devpulse/internal/config"
@@ -16,11 +17,11 @@ var (
 )
 
 var searchCmd = &cobra.Command{
-	Use:     "search [query]",
+	Use:     "search [query...]",
 	Aliases: []string{"s"},
 	Short:   "search your command history 🔍",
-	Long:    "Search all logged commands by keyword. Run with no args to see your top commands.",
-	Args:    cobra.MaximumNArgs(1),
+	Long:    "Search all logged commands by keyword. Quotes are optional — pulse s git checkout works fine.",
+	Args:    cobra.ArbitraryArgs,
 	RunE:    runSearch,
 }
 
@@ -41,12 +42,13 @@ func runSearch(_ *cobra.Command, args []string) error {
 	}
 	defer database.Close()
 
+	// join all args so  pulse s git checkout  works without quotes
+	query := strings.TrimSpace(strings.Join(args, " "))
+
 	// no query → show top commands as a starting point
-	if len(args) == 0 || args[0] == "" {
+	if query == "" {
 		return runSearchHelp(database)
 	}
-
-	query := args[0]
 	cmds, err := database.SearchCommands(query, searchDays, searchLimit)
 	if err != nil {
 		return fmt.Errorf("searching history: %w", err)
@@ -126,7 +128,8 @@ func runSearchHelp(database *db.DB) error {
 	cyan := lipgloss.NewStyle().Foreground(ui.ColorCyan)
 	muted := ui.Muted
 
-	fmt.Println("  " + muted.Render("usage:  ") + cyan.Render("pulse s <keyword>"))
+	fmt.Println("  " + muted.Render("usage:  ") + cyan.Render("pulse s <keyword>") +
+		muted.Render("   or   ") + cyan.Render("pulse s git checkout"))
 	fmt.Println()
 
 	if len(top) > 0 {
