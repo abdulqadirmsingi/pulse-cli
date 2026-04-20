@@ -13,7 +13,7 @@ var versionCmd = &cobra.Command{
 	Short: "show the version",
 	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Printf("%s %s\n",
-			ui.Title.Render("DevPulse"),
+			ui.Title.Render("Pulse"),
 			ui.Muted.Render("v"+config.AppVersion),
 		)
 	},

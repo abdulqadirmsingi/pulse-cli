@@ -15,7 +15,7 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "set up DevPulse on ur machine fr fr 🚀",
+	Short: "set up Pulse on ur machine fr fr 🚀",
 	Long:  "Creates the data directory, initialises the database, and installs shell hooks.",
 	RunE:  runInit,
 }
@@ -26,7 +26,7 @@ func init() {
 
 func runInit(_ *cobra.Command, _ []string) error {
 	fmt.Println()
-	fmt.Println(ui.Title.Render("🚀 setting up DevPulse..."))
+	fmt.Println(ui.Title.Render("🚀 setting up Pulse..."))
 	fmt.Println()
 
 	cfg, err := config.Load()
@@ -48,14 +48,17 @@ func runInit(_ *cobra.Command, _ []string) error {
 
 	shell := detectShell()
 	hookFile, hookContent := shellHook(shell)
-	if err := writeHook(hookFile, hookContent); err != nil {
+	wrote, err := writeHook(hookFile, hookContent)
+	if err != nil {
 		return fmt.Errorf("installing shell hook: %w", err)
 	}
-	printInitStep("✓", fmt.Sprintf("%s hook installed in %s", shell, hookFile))
+	if wrote {
+		printInitStep("✓", fmt.Sprintf("%s hook installed in %s", shell, hookFile))
+	}
 	fmt.Println()
 	cyan := lipgloss.NewStyle().Foreground(lipgloss.Color("#00D4FF"))
 	fmt.Println(ui.Box.Render(
-		ui.Success.Render("ur DevPulse is ready to slay 🔥")+"\n\n"+
+		ui.Success.Render("ur Pulse is ready to slay 🔥")+"\n\n"+
 			ui.Muted.Render("activate by running:")+"\n"+
 			cyan.Render("  source "+hookFile)+"\n\n"+
 			ui.Muted.Render("then try:")+"\n"+
@@ -84,19 +87,20 @@ func detectShell() string {
 func shellHook(shell string) (hookFile, content string) {
 	home, _ := os.UserHomeDir()
 
+	// date +%s%3N (milliseconds) is Linux-only and breaks on macOS.
+	// We use date +%s (seconds) universally, then multiply by 1000 for ms.
 	shared := `
-# ── DevPulse shell hook ─────────────────────────────────
+# ── Pulse shell hook ────────────────────────────────────
 _pulse_preexec() {
-    export _PULSE_CMD_START=$(date +%s%3N 2>/dev/null || echo 0)
-    export _PULSE_CMD="$1"
+    _PULSE_CMD_START=$(date +%s)
+    _PULSE_CMD="$1"
 }
 _pulse_precmd() {
     local _exit=$?
     [ -z "$_PULSE_CMD" ] && return
-    local _end=$(date +%s%3N 2>/dev/null || echo 0)
-    local _dur=$(( _end - _PULSE_CMD_START ))
-    pulse log --cmd "$_PULSE_CMD" --exit "$_exit" --ms "$_dur" --dir "$PWD" 2>/dev/null &
-    unset _PULSE_CMD
+    local _ms=$(( ($(date +%s) - ${_PULSE_CMD_START:-0}) * 1000 ))
+    pulse log --cmd "$_PULSE_CMD" --exit "$_exit" --ms "$_ms" --dir "$PWD" 2>/dev/null &
+    unset _PULSE_CMD _PULSE_CMD_START
 }
 `
 
@@ -120,20 +124,22 @@ PROMPT_COMMAND="_pulse_precmd${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 	}
 }
 
-func writeHook(hookFile, content string) error {
+// writeHook appends the hook to the shell config. Returns (true, nil) if written,
+// (false, nil) if already present. Safe to run multiple times (idempotent).
+func writeHook(hookFile, content string) (wrote bool, err error) {
 	existing, err := os.ReadFile(hookFile)
 	if err != nil && !os.IsNotExist(err) {
-		return err
+		return false, err
 	}
-	if strings.Contains(string(existing), "DevPulse shell hook") {
-		printInitStep("~", "hook already installed, skipping")
-		return nil
+	if strings.Contains(string(existing), "Pulse shell hook") {
+		printInitStep("~", "hook already installed, nothing to do")
+		return false, nil
 	}
 	f, err := os.OpenFile(hookFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return err
+		return false, err
 	}
 	defer f.Close()
 	_, err = f.WriteString(content)
-	return err
+	return err == nil, err
 }
