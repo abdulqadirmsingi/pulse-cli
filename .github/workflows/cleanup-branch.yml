@@ -8,6 +8,8 @@ jobs:
   delete-branch:
     if: github.event.pull_request.merged == true && github.event.pull_request.head.ref != 'dev'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: delete head branch
         uses: actions/github-script@v7
