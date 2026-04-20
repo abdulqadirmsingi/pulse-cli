@@ -169,3 +169,11 @@ func (db *DB) calcStreak() int {
 	}
 	return streak
 }
+
+func (d *DB) ResetCommands() (int64, error) {
+	res, err := d.conn.Exec(`DELETE FROM commands`)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
+}

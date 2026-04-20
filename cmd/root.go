@@ -19,7 +19,7 @@ import (
 // Fields you omit get their zero value (empty string, nil, false, etc.).
 var rootCmd = &cobra.Command{
 	Use:   "pulse",
-	Short: "track ur grind, no cap 🔥",
+	Short: "track ur grind, faster! 🔥",
 	Long:  buildBanner(),
 }
 
@@ -57,6 +57,6 @@ func buildBanner() string {
   ╚═╝      ╚═════╝ ╚══════╝╚══════╝╚══════╝`)
 
 	return art + "\n\n" +
-		purple.Render("  track ur grind, no cap 🔥") + "\n" +
+		purple.Render("  track ur grind faster! 🔥") + "\n" +
 		muted.Render("  run `pulse init` to get started\n")
 }
