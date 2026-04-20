@@ -50,7 +50,7 @@ func (r *DirectMainRule) Evaluate(e *git.Event) *Violation {
 		Severity: SeverityWarn,
 		Rule:     r.Name(),
 		Message:  "direct commit to " + e.Branch + " — consider a feature branch",
-		Fix:      "try: git switch -c feat/your-change",
+		Fix:      "what are you building? try: git switch -c feat/your-change",
 	}
 }
 
@@ -83,7 +83,7 @@ func (r *BranchNameRule) Evaluate(e *git.Event) *Violation {
 			Severity: SeverityWarn,
 			Rule:     r.Name(),
 			Message:  "branch name \"" + branch + "\" is too vague",
-			Fix:      "try: feat/your-feature, fix/the-bug, chore/what-you-did",
+			Fix:      "what are you working on? try: feat/user-auth or fix/login-bug",
 		}
 	}
 	return nil

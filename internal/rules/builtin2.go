@@ -43,7 +43,7 @@ func (r *ConventionalCommitRule) Evaluate(e *git.Event) *Violation {
 		Severity: SeverityWarn,
 		Rule:     r.Name(),
 		Message:  "commit message doesn't follow conventional format",
-		Fix:      "use: feat: / fix: / chore: / docs: / refactor: / test:",
+		Fix:      "what type of change? try: feat: / fix: / chore: / docs: / refactor: / test:",
 	}
 }
 
@@ -103,7 +103,7 @@ func (r *EmptyMergeMessageRule) Evaluate(e *git.Event) *Violation {
 			Severity: SeverityWarn,
 			Rule:     r.Name(),
 			Message:  "bare `git merge` with no branch specified",
-			Fix:      "specify the branch: git merge feat/your-feature",
+			Fix:      "which branch? try: git merge feat/your-feature",
 		}
 	}
 	return nil
