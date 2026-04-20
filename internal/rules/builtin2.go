@@ -8,10 +8,6 @@ import (
 	"github.com/devpulse-cli/devpulse/internal/git"
 )
 
-// ConventionalCommitRule warns if the commit message doesn't follow
-// the conventional commit format: type(scope): description
-// Good: "feat: add login", "fix(auth): nil panic", "chore: update deps"
-// Bad:  "added login", "fixed it", "updates"
 type ConventionalCommitRule struct{}
 
 func (r *ConventionalCommitRule) Name() string { return "conventional-commit" }
@@ -46,8 +42,6 @@ func (r *ConventionalCommitRule) Evaluate(e *git.Event) *Violation {
 	}
 }
 
-// FridayAfternoonRule is a soft nudge when pushing on Friday after 4pm.
-// Not a block — just a reminder that weekend incidents are no fun.
 type FridayAfternoonRule struct{}
 
 func (r *FridayAfternoonRule) Name() string { return "friday-afternoon" }
@@ -68,16 +62,13 @@ func (r *FridayAfternoonRule) Evaluate(e *git.Event) *Violation {
 	}
 }
 
-// DirectPushMainRule warns when pushing directly to main/master.
-// This is different from ForceMainRule — even a normal push to main
-// bypasses code review if the team uses PRs.
 type DirectPushMainRule struct{}
 
 func (r *DirectPushMainRule) Name() string { return "direct-push-main" }
 
 func (r *DirectPushMainRule) Evaluate(e *git.Event) *Violation {
 	if e.Subcommand != "push" || e.IsForce {
-		return nil // force push is handled by ForceMainRule
+		return nil
 	}
 	target := e.PushTarget
 	if target == "" {
@@ -94,8 +85,6 @@ func (r *DirectPushMainRule) Evaluate(e *git.Event) *Violation {
 	}
 }
 
-// EmptyMergeMessageRule warns on `git merge` without a descriptive message.
-// Merge commits are permanent history — a good message matters.
 type EmptyMergeMessageRule struct{}
 
 func (r *EmptyMergeMessageRule) Name() string { return "merge-message" }
@@ -104,9 +93,6 @@ func (r *EmptyMergeMessageRule) Evaluate(e *git.Event) *Violation {
 	if e.Subcommand != "merge" {
 		return nil
 	}
-	// --no-ff without -m means git will open an editor — that's fine.
-	// --squash without -m means git stages but doesn't commit — also fine.
-	// warn only when there are no args at all (bare `git merge`)
 	if len(e.Args) == 0 {
 		return &Violation{
 			Severity: SeverityWarn,

@@ -1,13 +1,7 @@
-// Package rules implements the git discipline rule engine for Pulse.
 package rules
 
 import "github.com/devpulse-cli/devpulse/internal/git"
 
-// Severity determines whether a violation is advisory or blocking.
-//
-// 🧠 Go Lesson #52: Define domain-specific types even when they mirror existing
-// ones. rules.Severity and insights.Level serve different concerns — keeping them
-// separate means changes to one never break the other.
 type Severity int
 
 const (
