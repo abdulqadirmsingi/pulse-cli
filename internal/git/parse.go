@@ -39,8 +39,12 @@ func Parse(cmd, dir string) *Event {
 	}
 
 	e.IsForce = hasFlag(e.Args, "--force", "-f")
-	e.Remote = firstPositional(e.Args)
-	e.Message = flagValue(e.Args, "-m", "--message")
+	e.Message = stripQuotes(flagValue(e.Args, "-m", "--message"))
+	// remote only makes sense for network commands
+	switch e.Subcommand {
+	case "push", "pull", "fetch", "clone":
+		e.Remote = firstPositional(e.Args)
+	}
 	return e
 }
 
