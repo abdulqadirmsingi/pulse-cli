@@ -1,14 +1,18 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/devpulse-cli/devpulse/internal/config"
 	"github.com/devpulse-cli/devpulse/internal/db"
 	igit "github.com/devpulse-cli/devpulse/internal/git"
+	"github.com/devpulse-cli/devpulse/internal/rules"
+	"github.com/devpulse-cli/devpulse/internal/ui"
 	"github.com/spf13/cobra"
 )
 
@@ -69,12 +73,16 @@ func runLog(_ *cobra.Command, _ []string) error {
 	project := projectFromDir(dir)
 	noise := isNoise(cmd)
 
-	// for git commands use InsertCommandGetID so we can link the git event
+	// for git commands: store event + evaluate rules
 	if igit.IsGit(cmd) {
 		id, err := database.InsertCommandGetID(cmd, dir, project, logFlagExit, logFlagMS, noise)
 		if err == nil {
 			if ev := igit.Parse(cmd, dir); ev != nil {
 				_ = database.InsertGitEvent(id, ev.Subcommand, ev.Branch, ev.Remote, ev.Message, ev.IsForce)
+				// only surface feedback when the git command itself succeeded
+				if logFlagExit == 0 {
+					printViolations(rules.Default().Evaluate(ev))
+				}
 			}
 		}
 		return nil
@@ -82,6 +90,37 @@ func runLog(_ *cobra.Command, _ []string) error {
 
 	_ = database.InsertCommand(cmd, dir, project, logFlagExit, logFlagMS, noise)
 	return nil
+}
+
+// cooldown prevents the same rule firing twice within 60 seconds.
+var (
+	cooldownMap  = map[string]time.Time{}
+	cooldownSecs = 60
+)
+
+func printViolations(violations []rules.Violation) {
+	if len(violations) == 0 {
+		return
+	}
+	now := time.Now()
+	for _, v := range violations {
+		if last, ok := cooldownMap[v.Rule]; ok && now.Sub(last).Seconds() < float64(cooldownSecs) {
+			continue
+		}
+		cooldownMap[v.Rule] = now
+
+		icon := "⚠️ "
+		style := ui.Muted
+		if v.Severity == rules.SeverityBlock {
+			icon = "🚫"
+			style = ui.Err
+		}
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "  "+icon+" "+style.Render(v.Message))
+		if v.Fix != "" {
+			fmt.Fprintln(os.Stderr, "     "+ui.Muted.Render(v.Fix))
+		}
+	}
 }
 
 func shouldSkip(cmd string) bool {
