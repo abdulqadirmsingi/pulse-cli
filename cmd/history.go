@@ -100,8 +100,11 @@ func runHistory(_ *cobra.Command, _ []string) error {
 	fmt.Println("  " + ui.Muted.Render(summary))
 	fmt.Println()
 
+	cyan := lipgloss.NewStyle().Foreground(ui.ColorCyan)
 	if !historyNoNoise {
-		fmt.Println("  " + ui.Muted.Render("tip: run with --no-noise to hide ls, cd, clear, etc."))
+		fmt.Println("  " + ui.Muted.Render("tip: hide noise with ") + cyan.Render("--no-noise") +
+			ui.Muted.Render("  ·  search history with ") + cyan.Render("pulse s <query>") +
+			ui.Muted.Render("  ·  save a fav with ") + cyan.Render("pulse f add \"<cmd>\""))
 		fmt.Println()
 	}
 
