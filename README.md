@@ -1,7 +1,3 @@
-# pulse
-
-> your terminal's personal trainer — tracks every command you run, how long you grind, and what you actually ship.
-
 ```
   ██████╗ ██╗   ██╗██╗     ███████╗███████╗
   ██╔══██╗██║   ██║██║     ██╔════╝██╔════╝
@@ -10,6 +6,10 @@
   ██║     ╚██████╔╝███████╗███████║███████╗
   ╚═╝      ╚═════╝ ╚══════╝╚══════╝╚══════╝
 ```
+
+> Your terminal's personal trainer — tracks every command you run, how long you grind, and what you actually ship.
+
+
 
 Pulse sits quietly in your shell and logs every command you run — which tools you reach for, how much time you spend per project, your streak of active days, and your overall success rate. Then it surfaces all of that in a clean dashboard that actually tells you something useful.
 
