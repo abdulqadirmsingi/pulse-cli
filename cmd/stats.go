@@ -15,7 +15,7 @@ var statsDays int
 
 var statsCmd = &cobra.Command{
 	Use:   "stats",
-	Short: "check ur dev stats 📊",
+	Short: "check your dev stats 📊",
 	Long:  "Shows your command count, grind time, streak, top commands, and top projects.",
 	RunE:  runStats,
 }
@@ -50,7 +50,7 @@ func runStats(_ *cobra.Command, _ []string) error {
 	}
 
 	fmt.Println()
-	fmt.Println(ui.Title.Render(fmt.Sprintf("📊  ur dev pulse  ·  last %d days", statsDays)))
+	fmt.Println(ui.Title.Render(fmt.Sprintf("📊  Your dev pulse  ·  last %d days", statsDays)))
 	fmt.Println()
 	fmt.Println(renderOverview(stats))
 
@@ -87,12 +87,6 @@ func statRow(label, value string) string {
 	return ui.Label.Render(label) + ui.Value.Render(value)
 }
 
-// renderBarSection renders a labelled list of bar chart rows WITHOUT a box wrapper.
-// We avoid Box here because block characters (█ ░) can render as double-width in
-// some terminals, making lipgloss miscalculate the box border position.
-//
-// 🧠 Go Lesson #49: When you hit a third-party rendering quirk, the pragmatic fix
-// is often to remove the abstraction causing it rather than fighting the library.
 func renderBarSection(title string, entries []db.TopEntry, byTime bool) string {
 	var maxVal float64
 	for _, e := range entries {

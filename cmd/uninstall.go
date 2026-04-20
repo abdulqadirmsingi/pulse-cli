@@ -27,7 +27,6 @@ func runUninstall(_ *cobra.Command, _ []string) error {
 	fmt.Println(ui.Title.Render("👋 uninstalling Pulse..."))
 	fmt.Println()
 
-	// Step 1: remove the shell hook from .zshrc / .bashrc
 	shell := detectShell()
 	home, _ := os.UserHomeDir()
 	var rcFile string
@@ -52,7 +51,6 @@ func runUninstall(_ *cobra.Command, _ []string) error {
 		printInitStep("~", "no hook found in "+rcFile)
 	}
 
-	// Step 2: remove the binary (try common locations)
 	binaryPath, _ := os.Executable()
 	removedBinary := false
 	for _, candidate := range binaryLocations(binaryPath) {
@@ -66,13 +64,11 @@ func runUninstall(_ *cobra.Command, _ []string) error {
 		printInitStep("~", "binary not found in standard locations — remove manually if needed")
 	}
 
-	// Step 3: optionally remove data directory
 	dataDir := filepath.Join(home, ".devpulse")
 	fmt.Println()
 	fmt.Println(ui.Muted.Render("  ur command history is still at: " + dataDir))
 	fmt.Println(ui.Muted.Render("  delete it with:  rm -rf " + dataDir))
 
-	// Goodbye message
 	fmt.Println()
 	cyan := lipgloss.NewStyle().Foreground(lipgloss.Color("#00D4FF"))
 	fmt.Println(ui.Box.Render(
@@ -83,16 +79,12 @@ func runUninstall(_ *cobra.Command, _ []string) error {
 	))
 	fmt.Println()
 
-	// Remind them to reload
 	fmt.Println(ui.Muted.Render("  reload ur shell to finish:"))
 	fmt.Println("  " + cyan.Render("source "+rcFile))
 	fmt.Println()
 	return nil
 }
 
-// binaryLocations returns candidate paths to look for the installed binary.
-// 🧠 Go Lesson #48: os.Executable() is the running binary's path —
-// useful for self-referential operations like uninstall.
 func binaryLocations(selfPath string) []string {
 	home, _ := os.UserHomeDir()
 	locs := []string{

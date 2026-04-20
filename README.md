@@ -78,7 +78,7 @@ Requires Go 1.21+.
 ## Example output
 
 ```
-📊  ur dev pulse  ·  last 7 days
+📊  Your dev pulse  ·  last 7 days
 
 ╭──────────────────────────────────────╮
 │  🔥  streak            9 day streak 🔥 │

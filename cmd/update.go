@@ -64,9 +64,6 @@ func runUpdate(_ *cobra.Command, _ []string) error {
 	)
 	fmt.Printf("  %s\n\n", ui.Muted.Render("downloading..."))
 
-	// 🧠 Go Lesson #50: runtime.GOOS and runtime.GOARCH are compile-time constants
-	// injected by the Go toolchain — "darwin", "linux", "windows" and "amd64", "arm64".
-	// They let one binary self-identify its platform for things like update checks.
 	assetName := fmt.Sprintf("pulse_%s_%s.tar.gz", runtime.GOOS, runtime.GOARCH)
 	var dlURL string
 	for _, a := range rel.Assets {
@@ -148,9 +145,7 @@ func downloadAndReplace(url string) error {
 	if data == nil {
 		return fmt.Errorf("pulse binary not found in archive")
 	}
-
-	// Write to a temp file next to the binary, then rename atomically.
-	// Rename on the same filesystem is a single syscall — no partial-write risk.
+	
 	self, err := os.Executable()
 	if err != nil {
 		return err

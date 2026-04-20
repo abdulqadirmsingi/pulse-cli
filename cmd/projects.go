@@ -66,10 +66,6 @@ func runProjects(_ *cobra.Command, _ []string) error {
 		col4.Render(hdr.Render("success")))
 	fmt.Println("  " + ui.Muted.Render(strings.Repeat("─", 56)))
 
-	// Rows
-	// 🧠 Go Lesson #42: Range over a slice returns (index, value).
-	// We use _ to discard the index when we only need the value.
-	// This is idiomatic Go — never use i when you don't need it.
 	for _, p := range projects {
 		name := lipgloss.NewStyle().Foreground(ui.ColorCyan).Width(22).Render(ui.Truncate(p.Name, 21))
 		timeStr := col2.Render(ui.FormatDuration(p.TotalTimeMS))
@@ -84,11 +80,6 @@ func runProjects(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-// rateColor maps a success percentage to a traffic-light color.
-//
-// 🧠 Go Lesson #43: lipgloss.Color is just `type Color string` under the hood.
-// Go lets you define methods and use types like this freely — no boxing,
-// no heap allocation, just a named string with extra type safety.
 func rateColor(rate float64) lipgloss.Color {
 	switch {
 	case rate >= 95:

@@ -15,7 +15,7 @@ var vibeDays int
 
 var vibeCmd = &cobra.Command{
 	Use:   "vibe",
-	Short: "check ur dev vibe ✨",
+	Short: "check your dev vibe ✨",
 	Long:  "Analyses your coding patterns and tells you what they mean — no fluff.",
 	RunE:  runVibe,
 }
@@ -52,7 +52,7 @@ func runVibe(_ *cobra.Command, _ []string) error {
 	report := insights.Analyse(stats, topCmds, topProjects)
 
 	fmt.Println()
-	fmt.Println(ui.Title.Render(fmt.Sprintf("✨  vibe check  ·  last %d days", vibeDays)))
+	fmt.Println(ui.Title.Render(fmt.Sprintf("✨  Your vibe check  ·  last %d days", vibeDays)))
 	fmt.Println()
 
 	// Quick stats line

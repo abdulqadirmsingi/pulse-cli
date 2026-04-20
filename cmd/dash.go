@@ -24,15 +24,6 @@ func init() {
 	dashCmd.Flags().IntVarP(&dashDays, "days", "d", 7, "days to include in stats")
 }
 
-// runDash launches the Bubble Tea program full-screen.
-//
-// 🧠 Go Lesson #39: tea.NewProgram(model, opts...) wires up the event loop.
-// p.Run() blocks until the user quits — it reads keyboard input, calls
-// Update on each event, then calls View to redraw.
-//
-// tea.WithAltScreen() switches to the terminal's alternate screen buffer
-// so the dashboard doesn't pollute your scroll history. When you quit,
-// the terminal snaps back to exactly where it was before.
 func runDash(_ *cobra.Command, _ []string) error {
 	cfg, err := config.Load()
 	if err != nil {

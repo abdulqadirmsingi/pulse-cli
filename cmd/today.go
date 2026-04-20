@@ -24,12 +24,6 @@ func init() {
 	rootCmd.AddCommand(todayCmd)
 }
 
-// runToday queries today-only data and renders it without launching a TUI.
-// It's a fast one-shot snapshot — use `pulse dash` if you want live updates.
-//
-// 🧠 Go Lesson #40: We use named return in the helper functions below, but
-// here we keep it explicit so you can see the full error-check pattern:
-// every function that can fail returns (value, error) and we check immediately.
 func runToday(_ *cobra.Command, _ []string) error {
 	cfg, err := config.Load()
 	if err != nil {
@@ -65,7 +59,6 @@ func runToday(_ *cobra.Command, _ []string) error {
 	fmt.Println(ui.Title.Render("📅  today — " + dayLabel))
 	fmt.Println()
 
-	// Summary box
 	rows := []string{
 		ui.Label.Render("⚡  commands") + ui.Value.Render(ui.FormatNumber(stats.TotalCommands)),
 		ui.Label.Render("⏰  time") + ui.Value.Render(ui.FormatDuration(stats.TotalTimeMS)),
@@ -74,7 +67,6 @@ func runToday(_ *cobra.Command, _ []string) error {
 	fmt.Println(ui.Box.Render(strings.Join(rows, "\n")))
 	fmt.Println()
 
-	// Hourly heatmap — reuses the same renderer as `pulse dash`
 	fmt.Println(ui.Accent.Render("  hourly activity"))
 	fmt.Println()
 	for _, line := range tui.HourlyChart(hourly, "  ") {
@@ -82,12 +74,10 @@ func runToday(_ *cobra.Command, _ []string) error {
 	}
 	fmt.Println()
 
-	// Top commands today
 	if len(topCmds) > 0 {
 		printBarSection("top commands today", topCmds, false)
 	}
 
-	// Top projects today
 	if len(topProjects) > 0 {
 		printBarSection("top projects today", topProjects, true)
 	}
@@ -95,12 +85,6 @@ func runToday(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-// printBarSection renders a labelled bar chart section to stdout.
-// byTime=true sizes bars by duration; false by command count.
-//
-// 🧠 Go Lesson #41: Helper functions that share logic between commands reduce
-// duplication without creating abstractions — they're just named subroutines.
-// Go doesn't need classes for this; plain functions work perfectly.
 func printBarSection(title string, entries []db.TopEntry, byTime bool) {
 	fmt.Println(ui.Accent.Render("  " + title))
 	fmt.Println()
