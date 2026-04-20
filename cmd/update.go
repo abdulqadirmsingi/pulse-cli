@@ -76,7 +76,7 @@ func runUpdate(_ *cobra.Command, _ []string) error {
 		}
 	}
 	if dlURL == "" {
-		return fmt.Errorf("no release asset for %s/%s\nsee: github.com/devpulse-cli/devpulse/releases", runtime.GOOS, runtime.GOARCH)
+		return fmt.Errorf("no release asset for %s/%s\nsee: github.com/abdulqadirmsingi/pulse-cli/releases", runtime.GOOS, runtime.GOARCH)
 	}
 
 	if err := downloadAndReplace(dlURL); err != nil {
@@ -91,7 +91,7 @@ func runUpdate(_ *cobra.Command, _ []string) error {
 
 func fetchLatestRelease() (*ghRelease, error) {
 	req, err := http.NewRequest("GET",
-		"https://api.github.com/repos/devpulse-cli/devpulse/releases/latest", nil)
+		"https://api.github.com/repos/abdulqadirmsingi/pulse-cli/releases/latest", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +104,7 @@ func fetchLatestRelease() (*ghRelease, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 404 {
-		return nil, fmt.Errorf("no releases found yet — publish one at github.com/devpulse-cli/devpulse/releases")
+		return nil, fmt.Errorf("no releases found yet — publish one at github.com/abdulqadirmsingi/pulse-cli/releases")
 	}
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("GitHub API returned %d", resp.StatusCode)
