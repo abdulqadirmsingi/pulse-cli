@@ -16,11 +16,11 @@ var (
 )
 
 var searchCmd = &cobra.Command{
-	Use:     "search <query>",
+	Use:     "search [query]",
 	Aliases: []string{"s"},
 	Short:   "search your command history 🔍",
-	Long:    "Search all logged commands by keyword. Use --days to limit to recent history.",
-	Args:    cobra.ExactArgs(1),
+	Long:    "Search all logged commands by keyword. Run with no args to see your top commands.",
+	Args:    cobra.MaximumNArgs(1),
 	RunE:    runSearch,
 }
 
@@ -31,11 +31,6 @@ func init() {
 }
 
 func runSearch(_ *cobra.Command, args []string) error {
-	query := args[0]
-	if query == "" {
-		return fmt.Errorf("query can't be empty — try  pulse s git  or  pulse s docker")
-	}
-
 	cfg, err := config.Load()
 	if err != nil {
 		return err
@@ -46,6 +41,12 @@ func runSearch(_ *cobra.Command, args []string) error {
 	}
 	defer database.Close()
 
+	// no query → show top commands as a starting point
+	if len(args) == 0 || args[0] == "" {
+		return runSearchHelp(database)
+	}
+
+	query := args[0]
 	cmds, err := database.SearchCommands(query, searchDays, searchLimit)
 	if err != nil {
 		return fmt.Errorf("searching history: %w", err)
@@ -110,5 +111,45 @@ func runSearch(_ *cobra.Command, args []string) error {
 		ui.Muted.Render("  ·  save a fav with ") + cyan.Render("pulse f add \"<cmd>\""))
 	fmt.Println()
 
+	return nil
+}
+
+// runSearchHelp is shown when pulse s is run with no query.
+// It shows the user's top commands as search suggestions.
+func runSearchHelp(database *db.DB) error {
+	top, _ := database.GetTopCommands(90, 8)
+
+	fmt.Println()
+	fmt.Println(ui.Title.Render("🔍  search your history"))
+	fmt.Println()
+
+	cyan := lipgloss.NewStyle().Foreground(ui.ColorCyan)
+	muted := ui.Muted
+
+	fmt.Println("  " + muted.Render("usage:  ") + cyan.Render("pulse s <keyword>"))
+	fmt.Println()
+
+	if len(top) > 0 {
+		fmt.Println("  " + ui.Accent.Render("your most-used commands  ·  try searching one:"))
+		fmt.Println()
+
+		nameStyle  := lipgloss.NewStyle().Foreground(ui.ColorCyan).Width(20)
+		countStyle := lipgloss.NewStyle().Foreground(ui.ColorGray)
+
+		for _, t := range top {
+			count := fmt.Sprintf("%d runs", t.Count)
+			fmt.Printf("  %s  %s  %s\n",
+				nameStyle.Render(ui.Truncate(t.Name, 18)),
+				countStyle.Render(count),
+				muted.Render("→  pulse s \""+t.Name+"\""),
+			)
+		}
+		fmt.Println()
+		fmt.Println("  " + muted.Render("save a command you keep coming back to:  ") + cyan.Render("pulse f add \"<cmd>\""))
+	} else {
+		fmt.Println("  " + muted.Render("no history yet — run some commands first, then come back"))
+	}
+
+	fmt.Println()
 	return nil
 }
