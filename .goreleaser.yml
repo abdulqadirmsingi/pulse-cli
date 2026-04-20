@@ -30,6 +30,7 @@ release:
   github:
     owner: abdulqadirmsingi
     name: pulse-cli
+
   name_template: "v{{.Version}}"
 
 changelog:
