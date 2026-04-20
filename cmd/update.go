@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,6 +16,8 @@ import (
 	"github.com/devpulse-cli/devpulse/internal/ui"
 	"github.com/spf13/cobra"
 )
+
+var errNoReleases = errors.New("no releases")
 
 var updateCmd = &cobra.Command{
 	Use:   "update",
@@ -43,6 +46,12 @@ func runUpdate(_ *cobra.Command, _ []string) error {
 	fmt.Println()
 
 	rel, err := fetchLatestRelease()
+	if errors.Is(err, errNoReleases) {
+		fmt.Printf("  %s  %s\n", ui.Success.Render("✓"),
+			ui.Muted.Render("already on the latest (v"+config.AppVersion+") — you're good to go"))
+		fmt.Println()
+		return nil
+	}
 	if err != nil {
 		return fmt.Errorf("checking for updates: %w", err)
 	}
@@ -101,7 +110,7 @@ func fetchLatestRelease() (*ghRelease, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 404 {
-		return nil, fmt.Errorf("no releases found yet — publish one at github.com/abdulqadirmsingi/pulse-cli/releases")
+		return nil, errNoReleases
 	}
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("GitHub API returned %d", resp.StatusCode)
