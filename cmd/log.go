@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/devpulse-cli/devpulse/internal/config"
 	"github.com/devpulse-cli/devpulse/internal/db"
@@ -92,23 +91,8 @@ func runLog(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-// cooldown prevents the same rule firing twice within 60 seconds.
-var (
-	cooldownMap  = map[string]time.Time{}
-	cooldownSecs = 60
-)
-
 func printViolations(violations []rules.Violation) {
-	if len(violations) == 0 {
-		return
-	}
-	now := time.Now()
 	for _, v := range violations {
-		if last, ok := cooldownMap[v.Rule]; ok && now.Sub(last).Seconds() < float64(cooldownSecs) {
-			continue
-		}
-		cooldownMap[v.Rule] = now
-
 		icon := "⚠️ "
 		style := ui.Muted
 		if v.Severity == rules.SeverityBlock {

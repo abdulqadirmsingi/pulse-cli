@@ -24,8 +24,13 @@ func (r *ConventionalCommitRule) Evaluate(e *git.Event) *Violation {
 		return nil
 	}
 	msg := strings.TrimSpace(e.Message)
-	// skip very short messages — VagueCommitRule already handles those
+	// skip short or vague messages — VagueCommitRule handles those,
+	// no need to double-warn the user
 	if utf8.RuneCountInString(msg) < 8 {
+		return nil
+	}
+	clean := strings.ToLower(strings.Trim(msg, " .,!?"))
+	if vagueMessages[clean] {
 		return nil
 	}
 	lower := strings.ToLower(msg)

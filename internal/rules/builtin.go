@@ -94,7 +94,8 @@ var vagueMessages = map[string]bool{
 	"fix": true, "update": true, "wip": true, "changes": true,
 	"stuff": true, "misc": true, "test": true, "temp": true,
 	"patch": true, "work": true, "commit": true, "save": true,
-	"done": true, "edit": true, "refactor": true, "cleanup": true,
+	"done": true, "edit": true,
+	// note: "refactor" and "cleanup" are valid conventional commit types — not vague
 }
 
 // VagueCommitRule warns on commit messages that carry no information.
