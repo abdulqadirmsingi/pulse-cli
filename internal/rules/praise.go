@@ -8,38 +8,38 @@ import (
 )
 
 var commitPraises = []string{
-	"clean commit message ✓",
-	"solid commit message 🎯",
-	"that's how you commit 🔥",
-	"future-you will thank you for this one",
-	"this is what good git history looks like 📖",
-	"chef's kiss on that commit message 🤌",
-	"your teammates just smiled reading that",
-	"clean, clear, conventional — perfect",
-	"this is the way 🚀",
-	"commit message game strong 💪",
-	"exactly what git log should look like",
-	"now that's a commit message worth keeping",
+	"Clean commit message ✓",
+	"Solid commit message 🎯",
+	"That's how you commit 🔥",
+	"Future-you will thank you for this one",
+	"This is what good git history looks like 📖",
+	"Chef's kiss on that commit message 🤌",
+	"Your teammates just smiled reading that",
+	"Clean, clear, conventional — perfect",
+	"This is the way 🚀",
+	"Commit message game strong 💪",
+	"Exactly what git log should look like",
+	"Now that's a commit message worth keeping",
 }
 
 var branchPraises = []string{
-	"clean branch name ✓",
-	"good branch name 🎯",
-	"that's a proper branch name ✓",
-	"anyone can tell what this branch does just by reading it 👀",
-	"clean branch, clean mind 🧠",
-	"that name tells a whole story 📖",
-	"branch name on point 🔥",
-	"this is how PRs stay organized",
-	"future-you won't be confused by this one",
+	"Clean branch name ✓",
+	"Good branch name 🎯",
+	"That's a proper branch name ✓",
+	"Anyone can tell what this branch does just by reading it 👀",
+	"Clean branch, clean mind 🧠",
+	"That name tells a whole story 📖",
+	"Branch name on point 🔥",
+	"This is how PRs stay organized",
+	"Future-you won't be confused by this one",
 }
 
 var pushPraises = []string{
-	"pushed to a feature branch — that's the move ✓",
-	"keeping main clean 🔥",
+	"Pushed to a feature branch — that's the move ✓",
+	"Keeping main clean 🔥",
 	"PR flow respected 🤝",
-	"that's how team players push code",
-	"feature branch push — good discipline ✓",
+	"That's how team players push code",
+	"Feature branch push — good discipline ✓",
 }
 
 var goodBranchPrefixes = []string{

@@ -29,8 +29,8 @@ func (r *ForceMainRule) Evaluate(e *git.Event) *Violation {
 	return &Violation{
 		Severity: SeverityBlock,
 		Rule:     r.Name(),
-		Message:  "force push to " + target + " — this rewrites shared history",
-		Fix:      "use --force-with-lease if you really must, or open a PR instead",
+		Message:  "Force push to " + target + " — this rewrites shared history",
+		Fix:      "Use --force-with-lease if you really must, or open a PR instead",
 	}
 }
 
@@ -49,8 +49,8 @@ func (r *DirectMainRule) Evaluate(e *git.Event) *Violation {
 	return &Violation{
 		Severity: SeverityWarn,
 		Rule:     r.Name(),
-		Message:  "direct commit to " + e.Branch + " — consider a feature branch",
-		Fix:      "what are you building? try: git switch -c feat/your-change",
+		Message:  "Direct commit to " + e.Branch + " — consider a feature branch",
+		Fix:      "What are you building? Try: git switch -c feat/your-change",
 	}
 }
 
@@ -82,8 +82,8 @@ func (r *BranchNameRule) Evaluate(e *git.Event) *Violation {
 		return &Violation{
 			Severity: SeverityWarn,
 			Rule:     r.Name(),
-			Message:  "branch name \"" + branch + "\" is too vague",
-			Fix:      "what are you working on? try: feat/user-auth or fix/login-bug",
+			Message:  "Branch name \"" + branch + "\" is too vague",
+			Fix:      "What are you working on? Try: feat/user-auth or fix/login-bug",
 		}
 	}
 	return nil
@@ -113,8 +113,8 @@ func (r *VagueCommitRule) Evaluate(e *git.Event) *Violation {
 		return &Violation{
 			Severity: SeverityWarn,
 			Rule:     r.Name(),
-			Message:  "commit message \"" + msg + "\" is too short to be useful",
-			Fix:      "what changed? try: \"fix: prevent nil panic in auth handler\"",
+			Message:  "Commit message \"" + msg + "\" is too short to be useful",
+			Fix:      "What changed? Try: \"fix: prevent nil panic in auth handler\"",
 		}
 	}
 	// exact match on known vague words (case-insensitive, ignores punctuation)
@@ -123,8 +123,8 @@ func (r *VagueCommitRule) Evaluate(e *git.Event) *Violation {
 		return &Violation{
 			Severity: SeverityWarn,
 			Rule:     r.Name(),
-			Message:  "commit message \"" + msg + "\" tells future-you nothing",
-			Fix:      "what changed? try: \"fix: prevent nil panic in auth handler\"",
+			Message:  "Commit message \"" + msg + "\" tells future-you nothing",
+			Fix:      "What changed? Try: \"fix: prevent nil panic in auth handler\"",
 		}
 	}
 	return nil
