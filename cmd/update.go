@@ -103,6 +103,9 @@ func fetchLatestRelease() (*ghRelease, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == 404 {
+		return nil, fmt.Errorf("no releases found yet — publish one at github.com/devpulse-cli/devpulse/releases")
+	}
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("GitHub API returned %d", resp.StatusCode)
 	}
