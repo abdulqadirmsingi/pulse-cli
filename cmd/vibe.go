@@ -77,7 +77,7 @@ func runVibe(_ *cobra.Command, _ []string) error {
 
 	// Tips — only shown if there's something actionable
 	if len(report.Tips) > 0 {
-		fmt.Println(ui.Accent.Render("  tips (no cap)"))
+		fmt.Println(ui.Accent.Render("  tips (no fluff)"))
 		fmt.Println()
 		for _, tip := range report.Tips {
 			fmt.Println(renderInsight(tip))

@@ -10,7 +10,7 @@ VERSION     = $(shell grep AppVersion internal/config/config.go | sed 's/.*"\(.*
 LDFLAGS     = -ldflags="-X github.com/devpulse-cli/devpulse/internal/config.AppVersion=$(VERSION) -s -w"
 INSTALL_DIR = $(HOME)/.local/bin
 
-.PHONY: build install uninstall clean seed
+.PHONY: build install uninstall clean
 
 build:
 	go build $(LDFLAGS) -o $(BINARY) .
@@ -32,12 +32,3 @@ uninstall:
 clean:
 	@rm -f $(BINARY)
 
-seed:
-	@echo "seeding test data..."
-	@for i in $$(seq 1 20); do \
-		$(INSTALL_DIR)/$(BINARY) log --cmd "git status"    --exit 0 --ms 120   --dir "$$(pwd)"; \
-		$(INSTALL_DIR)/$(BINARY) log --cmd "npm run dev"   --exit 0 --ms 3200  --dir "$$(pwd)"; \
-		$(INSTALL_DIR)/$(BINARY) log --cmd "go build ./..."--exit 0 --ms 800   --dir "$$(pwd)"; \
-		$(INSTALL_DIR)/$(BINARY) log --cmd "vim main.go"   --exit 0 --ms 45000 --dir "$$(pwd)"; \
-	done
-	@echo "✓ done — run 'pulse stats'"
