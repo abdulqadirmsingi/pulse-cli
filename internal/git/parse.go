@@ -91,8 +91,18 @@ func tokenize(s string) []string {
 	var cur strings.Builder
 	inDouble := false
 	inSingle := false
+	escaped := false
 
 	for _, r := range s {
+		if escaped {
+			cur.WriteRune(r)
+			escaped = false
+			continue
+		}
+		if r == '\\' && !inSingle {
+			escaped = true
+			continue
+		}
 		switch {
 		case r == '"' && !inSingle:
 			inDouble = !inDouble

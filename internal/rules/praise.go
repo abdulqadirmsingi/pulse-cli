@@ -83,9 +83,10 @@ func (r *GoodCommitPraise) Evaluate(e *git.Event) *Praise {
 	if e.Subcommand != "commit" || e.Message == "" {
 		return nil
 	}
-	lower := strings.ToLower(strings.TrimSpace(e.Message))
+	msg := strings.TrimSpace(e.Message)
+	// only praise when the case is also correct — wrong-case gets a violation instead
 	for _, p := range conventionalPrefixes {
-		if strings.HasPrefix(lower, p) {
+		if strings.HasPrefix(msg, p) {
 			return &Praise{
 				Rule:    r.Name(),
 				Message: commitPraises[rand.Intn(len(commitPraises))],
