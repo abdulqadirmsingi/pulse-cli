@@ -31,7 +31,7 @@
 
 ## CLI and UX
 
-- **Gen Z tone in all user-facing output.** No corporate speak. Keep it punchy, real, occasionally self-aware.
+- **Friendly tone in all user-facing output.** No corporate speak. Keep it punchy, real, occasionally self-aware.
 - **Hidden commands stay hidden.** `pulse log` is called by the shell hook only — `Hidden: true` keeps it out of `pulse help`.
 - **Shell hooks must be silent.** All hook output is redirected to `/dev/null`. Failures must never interrupt the user's terminal.
 - **zsh hook uses `&|`** (background + immediate disown) — prevents `[1] job` notifications in the terminal.
