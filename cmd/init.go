@@ -24,11 +24,6 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 }
 
-// runInit is the handler for `pulse init`.
-//
-// 🧠 Go Lesson #25: cobra.Command.RunE takes a function with signature
-// func(*cobra.Command, []string) error. Returning a non-nil error makes
-// Cobra print the error and exit non-zero — clean error propagation.
 func runInit(_ *cobra.Command, _ []string) error {
 	fmt.Println()
 	fmt.Println(ui.Title.Render("🚀 setting up DevPulse..."))
@@ -39,13 +34,11 @@ func runInit(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	// Step 1 — create the data directory
 	if err := cfg.EnsureDir(); err != nil {
 		return fmt.Errorf("creating data dir: %w", err)
 	}
 	printInitStep("✓", "data directory ready at "+cfg.DataDir)
 
-	// Step 2 — initialise the database (creates tables if missing)
 	database, err := db.Open(cfg.DBPath)
 	if err != nil {
 		return fmt.Errorf("initialising database: %w", err)
@@ -53,15 +46,12 @@ func runInit(_ *cobra.Command, _ []string) error {
 	database.Close()
 	printInitStep("✓", "database initialised")
 
-	// Step 3 — detect shell and install hooks
 	shell := detectShell()
 	hookFile, hookContent := shellHook(shell)
 	if err := writeHook(hookFile, hookContent); err != nil {
 		return fmt.Errorf("installing shell hook: %w", err)
 	}
 	printInitStep("✓", fmt.Sprintf("%s hook installed in %s", shell, hookFile))
-
-	// Done — show the "what's next" box
 	fmt.Println()
 	cyan := lipgloss.NewStyle().Foreground(lipgloss.Color("#00D4FF"))
 	fmt.Println(ui.Box.Render(
@@ -79,11 +69,6 @@ func printInitStep(icon, msg string) {
 	fmt.Printf("  %s  %s\n", ui.Success.Render(icon), ui.Muted.Render(msg))
 }
 
-// detectShell reads $SHELL to figure out which shell the user runs.
-//
-// 🧠 Go Lesson #26: os.Getenv reads an environment variable.
-// The `switch` statement in Go doesn't fall-through by default (unlike C).
-// Use `fallthrough` explicitly if you ever need it — a much safer default.
 func detectShell() string {
 	shell := os.Getenv("SHELL")
 	switch {
@@ -96,12 +81,9 @@ func detectShell() string {
 	}
 }
 
-// shellHook returns the config file path and hook script for the given shell.
 func shellHook(shell string) (hookFile, content string) {
 	home, _ := os.UserHomeDir()
 
-	// The hook script: preexec captures the command + start time,
-	// precmd fires after each command and calls `pulse log` in the background.
 	shared := `
 # ── DevPulse shell hook ─────────────────────────────────
 _pulse_preexec() {
@@ -138,8 +120,6 @@ PROMPT_COMMAND="_pulse_precmd${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 	}
 }
 
-// writeHook appends the hook to the shell config file.
-// It checks for the marker comment so it's safe to run `pulse init` twice.
 func writeHook(hookFile, content string) error {
 	existing, err := os.ReadFile(hookFile)
 	if err != nil && !os.IsNotExist(err) {

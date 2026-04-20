@@ -1,6 +1,3 @@
-// Package ui provides shared styling primitives for DevPulse's terminal output.
-// All colors, borders, and layout helpers live here so the aesthetic stays
-// consistent across every command.
 package ui
 
 import (
@@ -11,9 +8,6 @@ import (
 )
 
 // Color palette — dark theme, neon accents. Looks sick in any modern terminal.
-//
-// 🧠 Go Lesson #10: `var ( ... )` groups multiple variable declarations.
-// lipgloss.Color() wraps a hex string into a type the library understands.
 var (
 	ColorCyan   = lipgloss.Color("#00D4FF")
 	ColorPurple = lipgloss.Color("#9D4EDD")
@@ -24,10 +18,6 @@ var (
 )
 
 // Pre-built styles — create once, reuse everywhere.
-//
-// 🧠 Go Lesson #11: Method chaining. lipgloss.NewStyle() returns a Style value,
-// and each method (Foreground, Bold, etc.) returns a new Style with that property set.
-// This is the "builder" pattern — common in Go libraries.
 var (
 	Title = lipgloss.NewStyle().Foreground(ColorCyan).Bold(true)
 
@@ -47,10 +37,6 @@ var (
 )
 
 // ProgressBar renders an ASCII progress bar for a given value/max ratio.
-//
-// 🧠 Go Lesson #12: strings.Repeat(s, n) repeats string s n times.
-// This is more efficient than a for-loop concatenation because
-// strings in Go are immutable — each + creates a new allocation.
 func ProgressBar(value, max float64, width int) string {
 	if max == 0 || value == 0 {
 		return Bar.Render(strings.Repeat("░", width))
@@ -64,9 +50,6 @@ func ProgressBar(value, max float64, width int) string {
 }
 
 // FormatDuration converts milliseconds into a human-readable "Xh Ym" string.
-//
-// 🧠 Go Lesson #13: fmt.Sprintf is like printf — formats a string without printing it.
-// Use Sprintf when you need the string, Printf when you want to print it directly.
 func FormatDuration(ms int64) string {
 	if ms <= 0 {
 		return "0s"

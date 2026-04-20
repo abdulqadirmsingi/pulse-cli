@@ -22,7 +22,6 @@ var statsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(statsCmd)
-	// -d / --days lets the user pick the time window (default: last 7 days)
 	statsCmd.Flags().IntVarP(&statsDays, "days", "d", 7, "how many days to look back")
 }
 

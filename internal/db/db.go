@@ -1,26 +1,16 @@
-// Package db handles all SQLite persistence for DevPulse.
-// 🧠 Go Lesson #14: `database/sql` is Go's standard database interface.
-// Drivers (like modernc.org/sqlite) implement it — pure Go, no C compiler needed.
 package db
 
 import (
 	"database/sql"
 	"fmt"
 	"time"
-
-	// 🧠 Go Lesson #15: _ suppresses "unused import". We need the driver's
-	// init() side-effect (registering with database/sql) but never call it directly.
 	_ "modernc.org/sqlite"
 )
 
-// DB wraps *sql.DB to attach domain-specific query methods.
-// 🧠 Go Lesson #16: Wrapper pattern — we get all of sql.DB's power
-// and can add our own methods on top without inheritance.
 type DB struct {
 	conn *sql.DB
 }
 
-// Stats holds aggregated analytics for a time window.
 type Stats struct {
 	TotalCommands int64
 	TotalTimeMS   int64
@@ -28,14 +18,12 @@ type Stats struct {
 	StreakDays    int
 }
 
-// TopEntry represents a single row in a top-N ranking (command or project).
 type TopEntry struct {
 	Name  string
 	Count int64
 	MS    int64
 }
 
-// Open opens (or creates) the SQLite database at path and runs migrations.
 func Open(path string) (*DB, error) {
 	conn, err := sql.Open("sqlite", path)
 	if err != nil {
@@ -50,14 +38,10 @@ func Open(path string) (*DB, error) {
 	return db, nil
 }
 
-// Close releases the database connection.
-// Always call this (usually via defer) to avoid resource leaks.
 func (db *DB) Close() error {
 	return db.conn.Close()
 }
 
-// migrate creates tables/indexes on first run. IF NOT EXISTS makes it idempotent.
-// 🧠 Go Lesson #17: Backtick strings (raw literals) span multiple lines with no escapes.
 func (db *DB) migrate() error {
 	_, err := db.conn.Exec(`
 		CREATE TABLE IF NOT EXISTS commands (
@@ -75,8 +59,6 @@ func (db *DB) migrate() error {
 	return err
 }
 
-// InsertCommand persists a single shell command execution.
-// The ? placeholders are filled by the variadic args — never concatenate SQL strings!
 func (db *DB) InsertCommand(command, dir, project string, exitCode int, durationMS int64) error {
 	_, err := db.conn.Exec(
 		`INSERT INTO commands (command, directory, project, exit_code, duration_ms)
@@ -86,8 +68,6 @@ func (db *DB) InsertCommand(command, dir, project string, exitCode int, duration
 	return err
 }
 
-// GetStats returns aggregated stats for the last `days` days.
-// 🧠 Go Lesson #18: QueryRow().Scan() reads one row into Go variables in column order.
 func (db *DB) GetStats(days int) (*Stats, error) {
 	since := time.Now().AddDate(0, 0, -days).Format("2006-01-02")
 
@@ -108,8 +88,6 @@ func (db *DB) GetStats(days int) (*Stats, error) {
 	return &s, nil
 }
 
-// GetTopCommands returns the N most-used commands in the last `days` days.
-// 🧠 Go Lesson #19: Query() returns *sql.Rows. Always defer rows.Close() immediately.
 func (db *DB) GetTopCommands(days, limit int) ([]TopEntry, error) {
 	since := time.Now().AddDate(0, 0, -days).Format("2006-01-02")
 
@@ -127,7 +105,6 @@ func (db *DB) GetTopCommands(days, limit int) ([]TopEntry, error) {
 	}
 	defer rows.Close()
 
-	// 🧠 Go Lesson #20: nil slice + append() is idiomatic Go — no pre-sizing needed.
 	var entries []TopEntry
 	for rows.Next() {
 		var e TopEntry
@@ -139,7 +116,6 @@ func (db *DB) GetTopCommands(days, limit int) ([]TopEntry, error) {
 	return entries, rows.Err()
 }
 
-// GetTopProjects returns top N projects ranked by total time spent.
 func (db *DB) GetTopProjects(days, limit int) ([]TopEntry, error) {
 	since := time.Now().AddDate(0, 0, -days).Format("2006-01-02")
 
@@ -166,7 +142,6 @@ func (db *DB) GetTopProjects(days, limit int) ([]TopEntry, error) {
 	return entries, rows.Err()
 }
 
-// calcStreak counts consecutive days (ending today) that have command activity.
 func (db *DB) calcStreak() int {
 	rows, err := db.conn.Query(`
 		SELECT DISTINCT DATE(created_at) AS day
