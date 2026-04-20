@@ -90,7 +90,7 @@ func runUpdate(_ *cobra.Command, _ []string) error {
 	}
 
 	fmt.Printf("  %s  %s\n", ui.Success.Render("✓"),
-		ui.Muted.Render("updated to v"+latest+" — ur on the latest fr 🔥"))
+		ui.Muted.Render("updated to v"+latest+" — you're on the latest🔥"))
 	fmt.Println()
 	return nil
 }
