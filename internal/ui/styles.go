@@ -68,6 +68,16 @@ func FormatDuration(ms int64) string {
 	}
 }
 
+// Truncate clips s to max visible characters, appending "…" if cut.
+// Uses rune-safe slicing so multi-byte chars don't corrupt the output.
+func Truncate(s string, max int) string {
+	r := []rune(s)
+	if len(r) <= max {
+		return s
+	}
+	return string(r[:max-1]) + "…"
+}
+
 // FormatNumber adds comma separators to large integers (e.g. 1247 → "1,247").
 func FormatNumber(n int64) string {
 	s := fmt.Sprintf("%d", n)

@@ -121,7 +121,7 @@ func renderBarSection(title string, entries []db.TopEntry, byTime bool) string {
 			val = float64(e.Count)
 			suffix = ui.FormatNumber(e.Count) + " runs"
 		}
-		name := nameW.Render(e.Name)
+		name := nameW.Render(ui.Truncate(e.Name, 15))
 		bar := ui.ProgressBar(val, maxVal, 12)
 		lines = append(lines, "  "+name+bar+ui.Muted.Render("  "+suffix))
 	}

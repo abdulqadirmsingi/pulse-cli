@@ -71,7 +71,7 @@ func runProjects(_ *cobra.Command, _ []string) error {
 	// We use _ to discard the index when we only need the value.
 	// This is idiomatic Go — never use i when you don't need it.
 	for _, p := range projects {
-		name := lipgloss.NewStyle().Foreground(ui.ColorCyan).Width(22).Render(p.Name)
+		name := lipgloss.NewStyle().Foreground(ui.ColorCyan).Width(22).Render(ui.Truncate(p.Name, 21))
 		timeStr := col2.Render(ui.FormatDuration(p.TotalTimeMS))
 		cmds := col3.Render(ui.FormatNumber(p.Commands))
 		success := lipgloss.NewStyle().

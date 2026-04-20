@@ -16,6 +16,7 @@ var versionCmd = &cobra.Command{
 			ui.Title.Render("Pulse"),
 			ui.Muted.Render("v"+config.AppVersion),
 		)
+		fmt.Println(ui.Muted.Render("run `pulse update` to check for newer versions"))
 	},
 }
 

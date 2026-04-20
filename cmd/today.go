@@ -124,7 +124,7 @@ func printBarSection(title string, entries []db.TopEntry, byTime bool) {
 			val = float64(e.Count)
 			suffix = fmt.Sprintf("%d runs", e.Count)
 		}
-		name := lipgloss.NewStyle().Width(16).Render(e.Name)
+		name := lipgloss.NewStyle().Width(16).Render(ui.Truncate(e.Name, 15))
 		bar := ui.ProgressBar(val, maxVal, 16)
 		fmt.Println("  " + name + bar + ui.Muted.Render("  "+suffix))
 	}
