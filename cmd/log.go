@@ -74,10 +74,10 @@ func runLog(_ *cobra.Command, _ []string) error {
 
 // shouldSkip returns true for commands we don't want to log.
 func shouldSkip(cmd string) bool {
+	cmd = strings.TrimSpace(cmd)
 	if cmd == "" {
 		return true
 	}
-	// Don't log pulse's own commands — avoids infinite loops and noise.
 	base := strings.Fields(cmd)[0]
 	return base == "pulse"
 }

@@ -93,11 +93,12 @@ func (db *DB) GetTopCommands(days, limit int) ([]TopEntry, error) {
 
 	rows, err := db.conn.Query(`
 		SELECT
-			TRIM(SUBSTR(command, 1, INSTR(command || ' ', ' ') - 1)) AS base_cmd,
+			TRIM(SUBSTR(command, 1, INSTR(TRIM(command) || ' ', ' ') - 1)) AS base_cmd,
 			COUNT(*) AS cnt
 		FROM commands
-		WHERE created_at >= ? AND command != ''
+		WHERE created_at >= ? AND TRIM(command) != ''
 		GROUP BY base_cmd
+		HAVING base_cmd != ''
 		ORDER BY cnt DESC
 		LIMIT ?`, since, limit)
 	if err != nil {
