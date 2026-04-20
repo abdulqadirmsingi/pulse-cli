@@ -17,7 +17,7 @@ type Event struct {
 // Parse returns an Event from a raw command string and working directory.
 // Returns nil if the command is not a git command or has no subcommand.
 func Parse(cmd, dir string) *Event {
-	fields := strings.Fields(cmd)
+	fields := tokenize(cmd)
 	// must start with "git" and have at least one subcommand
 	if len(fields) < 2 || strings.ToLower(fields[0]) != "git" {
 		return nil
@@ -94,6 +94,39 @@ func allPositionals(args []string) []string {
 		}
 	}
 	return out
+}
+
+// tokenize splits a shell command string into tokens, respecting single and
+// double quoted strings so "feat: add login" stays as one token.
+//
+// 🧠 Go Lesson #56: strings.Fields splits on all whitespace regardless of
+// quotes. For shell command parsing you need a state machine that tracks
+// whether you're inside a quoted section before deciding to split.
+func tokenize(s string) []string {
+	var tokens []string
+	var cur strings.Builder
+	inDouble := false
+	inSingle := false
+
+	for _, r := range s {
+		switch {
+		case r == '"' && !inSingle:
+			inDouble = !inDouble
+		case r == '\'' && !inDouble:
+			inSingle = !inSingle
+		case (r == ' ' || r == '\t') && !inDouble && !inSingle:
+			if cur.Len() > 0 {
+				tokens = append(tokens, cur.String())
+				cur.Reset()
+			}
+		default:
+			cur.WriteRune(r)
+		}
+	}
+	if cur.Len() > 0 {
+		tokens = append(tokens, cur.String())
+	}
+	return tokens
 }
 
 // stripQuotes removes a single layer of surrounding single or double quotes.
