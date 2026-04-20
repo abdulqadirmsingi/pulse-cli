@@ -1,6 +1,4 @@
-# GoReleaser config — builds binaries for all platforms and creates GitHub releases.
-# Run: goreleaser release --clean
-# Dry-run: goreleaser build --snapshot --clean
+version: 2
 project_name: pulse
 
 before:
