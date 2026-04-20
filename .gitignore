@@ -3,4 +3,4 @@ pulse
 pulse.new
 *.db
 RULES.md
-rules.md
+.DS_Store
