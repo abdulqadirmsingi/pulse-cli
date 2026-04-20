@@ -47,6 +47,7 @@ func (db *DB) migrate() error {
 	db.conn.Exec(`PRAGMA synchronous=NORMAL`)
 	db.conn.Exec(`PRAGMA foreign_keys=ON`)
 	db.conn.Exec(`PRAGMA auto_vacuum=INCREMENTAL`)
+	db.conn.Exec(`PRAGMA busy_timeout=5000`)
 
 	stmts := []string{
 		`CREATE TABLE IF NOT EXISTS commands (
@@ -75,6 +76,12 @@ func (db *DB) migrate() error {
 		`CREATE INDEX IF NOT EXISTS idx_git_branch  ON git_events(branch)`,
 		`CREATE INDEX IF NOT EXISTS idx_git_sub     ON git_events(subcommand)`,
 		`CREATE INDEX IF NOT EXISTS idx_git_created ON git_events(created_at)`,
+		`CREATE TABLE IF NOT EXISTS favorites (
+			id         INTEGER  PRIMARY KEY AUTOINCREMENT,
+			command    TEXT     NOT NULL,
+			alias      TEXT     NOT NULL DEFAULT '',
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		)`,
 	}
 	for _, s := range stmts {
 		if _, err := db.conn.Exec(s); err != nil {

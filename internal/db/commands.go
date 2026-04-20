@@ -1,6 +1,9 @@
 package db
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 func (db *DB) InsertCommand(command, dir, project string, exitCode int, durationMS int64, isNoise bool) error {
 	noise := 0
@@ -148,6 +151,46 @@ func (db *DB) GetTodayCommands() ([]CommandRow, error) {
 		FROM commands
 		WHERE DATE(created_at) = ? AND TRIM(command) != ''
 		ORDER BY created_at ASC`, today)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []CommandRow
+	for rows.Next() {
+		var c CommandRow
+		var noise int
+		if err := rows.Scan(&c.Command, &c.ExitCode, &c.DurationMS, &c.CreatedAt, &noise); err != nil {
+			continue
+		}
+		c.Noise = noise == 1
+		out = append(out, c)
+	}
+	return out, rows.Err()
+}
+
+// SearchCommands returns commands matching query (case-insensitive LIKE).
+// days=0 means all-time. Results are ordered newest-first.
+func (db *DB) SearchCommands(query string, days, limit int) ([]CommandRow, error) {
+	pattern := "%" + query + "%"
+	var (
+		rows *sql.Rows
+		err  error
+	)
+	if days > 0 {
+		since := time.Now().AddDate(0, 0, -days).Format("2006-01-02")
+		rows, err = db.conn.Query(`
+			SELECT command, exit_code, duration_ms, created_at, noise
+			FROM commands
+			WHERE command LIKE ? AND created_at >= ? AND TRIM(command) != ''
+			ORDER BY created_at DESC LIMIT ?`, pattern, since, limit)
+	} else {
+		rows, err = db.conn.Query(`
+			SELECT command, exit_code, duration_ms, created_at, noise
+			FROM commands
+			WHERE command LIKE ? AND TRIM(command) != ''
+			ORDER BY created_at DESC LIMIT ?`, pattern, limit)
+	}
 	if err != nil {
 		return nil, err
 	}
