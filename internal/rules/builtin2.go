@@ -42,8 +42,8 @@ func (r *ConventionalCommitRule) Evaluate(e *git.Event) *Violation {
 	return &Violation{
 		Severity: SeverityWarn,
 		Rule:     r.Name(),
-		Message:  "commit message doesn't follow conventional format",
-		Fix:      "what type of change? try: feat: / fix: / chore: / docs: / refactor: / test:",
+		Message:  "Commit message doesn't follow conventional format",
+		Fix:      "What type of change? try using: feat: / fix: / chore: / docs: / refactor: / test:",
 	}
 }
 

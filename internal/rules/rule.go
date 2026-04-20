@@ -58,6 +58,7 @@ func Default() *Engine {
 		praiseRules: []PraiseRule{
 			&GoodCommitPraise{},
 			&GoodBranchPraise{},
+			&GoodPushPraise{},
 		},
 	}
 }
