@@ -41,10 +41,16 @@ func Parse(cmd, dir string) *Event {
 
 	e.IsForce = hasFlag(e.Args, "--force", "-f")
 	e.Message = stripQuotes(flagValue(e.Args, "-m", "--message"))
-	// remote only makes sense for network commands
+	// remote and push target only make sense for network commands
 	switch e.Subcommand {
 	case "push", "pull", "fetch", "clone":
-		e.Remote = firstPositional(e.Args)
+		positionals := allPositionals(e.Args)
+		if len(positionals) > 0 {
+			e.Remote = positionals[0]
+		}
+		if e.Subcommand == "push" && len(positionals) > 1 {
+			e.PushTarget = positionals[1]
+		}
 	}
 	return e
 }
@@ -77,6 +83,17 @@ func firstPositional(args []string) string {
 		}
 	}
 	return ""
+}
+
+// allPositionals returns every arg that is not a flag.
+func allPositionals(args []string) []string {
+	var out []string
+	for _, a := range args {
+		if !strings.HasPrefix(a, "-") {
+			out = append(out, a)
+		}
+	}
+	return out
 }
 
 // stripQuotes removes a single layer of surrounding single or double quotes.
