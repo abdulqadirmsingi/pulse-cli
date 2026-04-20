@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -8,6 +9,9 @@ import (
 
 	"github.com/devpulse-cli/devpulse/internal/config"
 	"github.com/devpulse-cli/devpulse/internal/db"
+	igit "github.com/devpulse-cli/devpulse/internal/git"
+	"github.com/devpulse-cli/devpulse/internal/rules"
+	"github.com/devpulse-cli/devpulse/internal/ui"
 	"github.com/spf13/cobra"
 )
 
@@ -38,13 +42,9 @@ func init() {
 // compile once with MustCompile, reuse on every call with no allocation.
 var reANSI = regexp.MustCompile(`\x1b(?:\[[0-9;?]*[a-zA-Z]|\][^\x07]*\x07|[^[\]])`)
 
-// sanitizeCmd strips escape sequences, control characters, and excess whitespace
-// from a raw command string captured by the shell hook.
-// zsh's preexec passes $1 with leading/trailing spaces and sometimes embedded
-// ANSI codes from syntax-highlighting plugins — this normalises all of that.
+// sanitizeCmd strips escape sequences, control characters, and excess whitespace.
 func sanitizeCmd(cmd string) string {
 	cmd = reANSI.ReplaceAllString(cmd, "")
-	// collapse all whitespace runs to single spaces, trim edges
 	return strings.Join(strings.Fields(cmd), " ")
 }
 
@@ -70,8 +70,49 @@ func runLog(_ *cobra.Command, _ []string) error {
 	}
 
 	project := projectFromDir(dir)
-	_ = database.InsertCommand(cmd, dir, project, logFlagExit, logFlagMS, isNoise(cmd))
+	noise := isNoise(cmd)
+
+	// for git commands: store event + evaluate rules
+	if igit.IsGit(cmd) {
+		id, err := database.InsertCommandGetID(cmd, dir, project, logFlagExit, logFlagMS, noise)
+		if err == nil {
+			if ev := igit.Parse(cmd, dir); ev != nil {
+				_ = database.InsertGitEvent(id, ev.Subcommand, ev.Branch, ev.Remote, ev.Message, ev.IsForce)
+				// only surface feedback when the git command itself succeeded
+				if logFlagExit == 0 {
+					printViolations(rules.Default().Evaluate(ev))
+				}
+			}
+		}
+		return nil
+	}
+
+	_ = database.InsertCommand(cmd, dir, project, logFlagExit, logFlagMS, noise)
 	return nil
+}
+
+func printViolations(violations []rules.Violation) {
+	for _, v := range violations {
+		icon := "⚠️ "
+		style := ui.Muted
+		if v.Severity == rules.SeverityBlock {
+			icon = "🚫"
+			style = ui.Err
+		}
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "  "+icon+" "+style.Render(v.Message))
+		if v.Fix != "" {
+			fmt.Fprintln(os.Stderr, "     "+ui.Muted.Render(v.Fix))
+		}
+	}
+}
+
+func shouldSkip(cmd string) bool {
+	if cmd == "" {
+		return true
+	}
+	base := strings.Fields(cmd)[0]
+	return base == "pulse"
 }
 
 // noiseCommands are shell housekeeping commands that clutter dev stats.
@@ -83,14 +124,6 @@ var noiseCommands = map[string]bool{
 	"history": true,
 	"cat": true, "less": true, "more": true,
 	"man": true,
-}
-
-func shouldSkip(cmd string) bool {
-	if cmd == "" {
-		return true
-	}
-	base := strings.Fields(cmd)[0]
-	return base == "pulse"
 }
 
 func isNoise(cmd string) bool {

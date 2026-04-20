@@ -15,7 +15,7 @@ var vibeDays int
 
 var vibeCmd = &cobra.Command{
 	Use:   "vibe",
-	Short: "check your dev vibe ✨",
+	Short: "analyse your coding patterns and habits ✨",
 	Long:  "Analyses your coding patterns and tells you what they mean — no fluff.",
 	RunE:  runVibe,
 }

@@ -21,7 +21,7 @@ var errNoReleases = errors.New("no releases")
 
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "update pulse to the latest version ⬆️",
+	Short: "update Pulse to the latest version ⬆️",
 	Long:  "Checks GitHub for a newer release and replaces the binary in-place.",
 	RunE:  runUpdate,
 }

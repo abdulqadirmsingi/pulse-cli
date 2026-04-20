@@ -15,7 +15,7 @@ var statsDays int
 
 var statsCmd = &cobra.Command{
 	Use:   "stats",
-	Short: "check your dev stats 📊",
+	Short: "view your activity stats 📊",
 	Long:  "Shows your command count, grind time, streak, top commands, and top projects.",
 	RunE:  runStats,
 }
@@ -55,7 +55,8 @@ func runStats(_ *cobra.Command, _ []string) error {
 	fmt.Println(renderOverview(stats))
 
 	if len(topCmds) > 0 {
-		fmt.Println(renderBarSection("💻  top commands", topCmds, false))
+		fmt.Println(renderBarSection(fmt.Sprintf("💻  top %d commands", len(topCmds)), topCmds, false))
+		fmt.Println("  " + ui.Muted.Render("run `pulse history` to see every command in full"))
 	}
 	if len(topProjects) > 0 {
 		fmt.Println(renderBarSection("📁  top projects", topProjects, true))

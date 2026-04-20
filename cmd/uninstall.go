@@ -13,7 +13,7 @@ import (
 
 var uninstallCmd = &cobra.Command{
 	Use:   "uninstall",
-	Short: "remove Pulse from ur machine 👋",
+	Short: "remove Pulse from your machine 👋",
 	Long:  "Removes the shell hook from your config and deletes the binary.",
 	RunE:  runUninstall,
 }

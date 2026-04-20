@@ -10,7 +10,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "pulse",
-	Short: "track ur grind, faster! 🔥",
+	Short: "track your dev activity, automatically 🔥",
 	Long:  buildBanner(),
 }
 

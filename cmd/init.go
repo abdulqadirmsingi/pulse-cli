@@ -18,7 +18,7 @@ var initReinstall bool
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "set up Pulse on ur machine fr fr 🚀",
+	Short: "set up Pulse on your machine 🚀",
 	Long:  "Creates the data directory, initialises the database, and installs shell hooks.",
 	RunE:  runInit,
 }
@@ -121,14 +121,21 @@ _pulse_precmd() {
     local _exit=$?
     [ -z "$_PULSE_CMD" ] && return
     local _ms=$(( ($(date +%%s) - ${_PULSE_CMD_START:-0}) * 1000 ))
-    %s log --cmd "$_PULSE_CMD" --exit "$_exit" --ms "$_ms" --dir "$PWD" >/dev/null 2>&1 &|
+    case "$_PULSE_CMD" in
+        git\ *)
+            %s log --cmd "$_PULSE_CMD" --exit "$_exit" --ms "$_ms" --dir "$PWD" 2>&1
+            ;;
+        *)
+            %s log --cmd "$_PULSE_CMD" --exit "$_exit" --ms "$_ms" --dir "$PWD" >/dev/null 2>&1 &|
+            ;;
+    esac
     unset _PULSE_CMD _PULSE_CMD_START
 }
 autoload -Uz add-zsh-hook
 add-zsh-hook preexec _pulse_preexec
 add-zsh-hook precmd  _pulse_precmd
 # ────────────────────────────────────────────────────────
-`, binaryPath)
+`, binaryPath, binaryPath)
 		return filepath.Join(home, ".zshrc"), content
 
 	default: // bash
@@ -142,14 +149,21 @@ _pulse_precmd() {
     local _exit=$?
     [ -z "$_PULSE_CMD" ] && return
     local _ms=$(( ($(date +%%s) - ${_PULSE_CMD_START:-0}) * 1000 ))
-    %s log --cmd "$_PULSE_CMD" --exit "$_exit" --ms "$_ms" --dir "$PWD" >/dev/null 2>&1 &
-    disown $! 2>/dev/null || true
+    case "$_PULSE_CMD" in
+        git\ *)
+            %s log --cmd "$_PULSE_CMD" --exit "$_exit" --ms "$_ms" --dir "$PWD" 2>&1
+            ;;
+        *)
+            %s log --cmd "$_PULSE_CMD" --exit "$_exit" --ms "$_ms" --dir "$PWD" >/dev/null 2>&1 &
+            disown $! 2>/dev/null || true
+            ;;
+    esac
     unset _PULSE_CMD _PULSE_CMD_START
 }
 trap '_pulse_preexec' DEBUG
 PROMPT_COMMAND="_pulse_precmd${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 # ────────────────────────────────────────────────────────
-`, binaryPath)
+`, binaryPath, binaryPath)
 		return filepath.Join(home, ".bashrc"), content
 	}
 }

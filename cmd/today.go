@@ -15,7 +15,7 @@ import (
 
 var todayCmd = &cobra.Command{
 	Use:   "today",
-	Short: "what did u actually do today? 📅",
+	Short: "see what you worked on today 📅",
 	Long:  "Hourly heatmap + command and project breakdown for the current day.",
 	RunE:  runToday,
 }

@@ -13,7 +13,7 @@ var resetForce bool
 
 var resetCmd = &cobra.Command{
 	Use:   "reset",
-	Short: "nuke ur command history and start fresh 🗑️",
+	Short: "clear your command history and start fresh 🗑️",
 	Long:  "Clears all logged commands from the database. Use --force to skip the confirmation prompt.",
 	RunE:  runReset,
 }

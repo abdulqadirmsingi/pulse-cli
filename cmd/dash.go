@@ -14,7 +14,7 @@ var dashDays int
 
 var dashCmd = &cobra.Command{
 	Use:   "dash",
-	Short: "open the live dashboard fr fr 🎮",
+	Short: "open the live activity dashboard 🎮",
 	Long:  "Interactive TUI dashboard. Tab through four views, auto-refreshes every 5 seconds.",
 	RunE:  runDash,
 }

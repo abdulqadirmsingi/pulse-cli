@@ -15,7 +15,7 @@ import (
 
 var doctorCmd = &cobra.Command{
 	Use:   "doctor",
-	Short: "check if pulse is tracking correctly 🩺",
+	Short: "verify your setup is working correctly 🩺",
 	Long:  "Verifies your setup: data dir, database, and shell hook installation.",
 	RunE:  runDoctor,
 }

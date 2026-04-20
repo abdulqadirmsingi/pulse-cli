@@ -15,7 +15,7 @@ var projectsDays int
 
 var projectsCmd = &cobra.Command{
 	Use:   "projects",
-	Short: "where ur time actually goes 📁",
+	Short: "see time spent across your projects 📁",
 	Long:  "Lists every detected project with time spent, command count, and success rate.",
 	RunE:  runProjects,
 }

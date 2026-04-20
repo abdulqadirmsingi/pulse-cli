@@ -45,6 +45,13 @@
 - **Don't wrap bar chart sections in `ui.Box`.** Block characters (█ ░) render as double-width in some terminals, causing lipgloss to miscalculate border position. Use plain indented text for bar sections; reserve `Box` for fixed-width metric rows.
 - **Always truncate names before passing to lipgloss `Width()`.** `Width()` pads to a minimum — it does not clip. Long names overflow and break alignment. Use `ui.Truncate(name, max)` first.
 
+## Documentation Maintenance
+
+- **Every new command or feature must update two things before the PR merges:**
+  1. `README.md` — add it to the relevant section so users know it exists
+  2. The `pulse --help` output — make sure the `Short` description in the Cobra command is clear and helpful
+- The help text is the first thing a new user sees. A command with a missing or confusing `Short` is considered incomplete.
+
 ## Releasing a New Version
 
 When you make changes and want to ship them to users:
