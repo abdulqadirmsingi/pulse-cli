@@ -15,7 +15,7 @@ var statsDays int
 
 var statsCmd = &cobra.Command{
 	Use:   "stats",
-	Short: "check ur dev stats no cap 📊",
+	Short: "check ur dev stats 📊",
 	Long:  "Shows your command count, grind time, streak, top commands, and top projects.",
 	RunE:  runStats,
 }
@@ -30,14 +30,12 @@ func runStats(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
-
 	database, err := db.Open(cfg.DBPath)
 	if err != nil {
 		return fmt.Errorf("opening database: %w", err)
 	}
 	defer database.Close()
 
-	// Fetch all the data we need in one pass.
 	stats, err := database.GetStats(statsDays)
 	if err != nil {
 		return fmt.Errorf("loading stats: %w", err)
@@ -51,42 +49,33 @@ func runStats(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	// Render everything.
 	fmt.Println()
-	fmt.Println(renderStatsHeader(statsDays))
+	fmt.Println(ui.Title.Render(fmt.Sprintf("📊  ur dev pulse  ·  last %d days", statsDays)))
+	fmt.Println()
 	fmt.Println(renderOverview(stats))
+
 	if len(topCmds) > 0 {
-		fmt.Println(renderTopCmds(topCmds))
+		fmt.Println(renderBarSection("💻  top commands", topCmds, false))
 	}
 	if len(topProjects) > 0 {
-		fmt.Println(renderTopProjects(topProjects))
+		fmt.Println(renderBarSection("📁  top projects", topProjects, true))
 	}
 	fmt.Println()
 	return nil
 }
 
-// renderStatsHeader prints the title line with the time window.
-func renderStatsHeader(days int) string {
-	return ui.Title.Render(fmt.Sprintf("📊  ur dev pulse  ·  last %d days", days))
-}
-
-// renderOverview renders the four key metrics in a box.
-//
-// 🧠 Go Lesson #30: strings.Join(slice, separator) is the idiomatic way to
-// build a multi-line string from parts. It's cleaner than repeated +=.
 func renderOverview(s *db.Stats) string {
-	streakLabel := fmt.Sprintf("%d day streak", s.StreakDays)
+	streak := fmt.Sprintf("%d day streak", s.StreakDays)
 	switch {
 	case s.StreakDays == 0:
-		streakLabel = "no streak yet 💀"
+		streak = "no streak yet 💀"
 	case s.StreakDays >= 30:
-		streakLabel += " 🏆 unreal"
+		streak += " 🏆"
 	case s.StreakDays >= 7:
-		streakLabel += " 🔥 on fire"
+		streak += " 🔥"
 	}
-
 	rows := []string{
-		statRow("🔥  streak", streakLabel),
+		statRow("🔥  streak", streak),
 		statRow("⚡  commands", ui.FormatNumber(s.TotalCommands)),
 		statRow("⏰  grind time", ui.FormatDuration(s.TotalTimeMS)),
 		statRow("✅  success rate", fmt.Sprintf("%.1f%%", s.SuccessRate)),
@@ -98,32 +87,43 @@ func statRow(label, value string) string {
 	return ui.Label.Render(label) + ui.Value.Render(value)
 }
 
-// renderTopCmds renders a bar chart of the most-used commands.
-func renderTopCmds(entries []db.TopEntry) string {
-	max := float64(entries[0].Count)
-	lines := []string{ui.Accent.Render("💻  top commands (no cap)")}
-	lines = append(lines, "")
-
+// renderBarSection renders a labelled list of bar chart rows WITHOUT a box wrapper.
+// We avoid Box here because block characters (█ ░) can render as double-width in
+// some terminals, making lipgloss miscalculate the box border position.
+//
+// 🧠 Go Lesson #49: When you hit a third-party rendering quirk, the pragmatic fix
+// is often to remove the abstraction causing it rather than fighting the library.
+func renderBarSection(title string, entries []db.TopEntry, byTime bool) string {
+	var maxVal float64
 	for _, e := range entries {
-		name := lipgloss.NewStyle().Width(14).Render(e.Name)
-		bar := ui.ProgressBar(float64(e.Count), max, 14)
-		count := ui.Muted.Render(fmt.Sprintf("  %s runs", ui.FormatNumber(e.Count)))
-		lines = append(lines, name+bar+count)
+		v := float64(e.Count)
+		if byTime {
+			v = float64(e.MS)
+		}
+		if v > maxVal {
+			maxVal = v
+		}
 	}
-	return ui.Box.Render(strings.Join(lines, "\n"))
-}
 
-// renderTopProjects renders a bar chart of projects by time spent.
-func renderTopProjects(entries []db.TopEntry) string {
-	max := float64(entries[0].MS)
-	lines := []string{ui.Accent.Render("📁  top projects")}
-	lines = append(lines, "")
+	lines := []string{
+		ui.Accent.Render("  " + title),
+		"",
+	}
 
+	nameW := lipgloss.NewStyle().Width(16)
 	for _, e := range entries {
-		name := lipgloss.NewStyle().Width(18).Render(e.Name)
-		bar := ui.ProgressBar(float64(e.MS), max, 14)
-		dur := ui.Muted.Render("  " + ui.FormatDuration(e.MS))
-		lines = append(lines, name+bar+dur)
+		var val float64
+		var suffix string
+		if byTime {
+			val = float64(e.MS)
+			suffix = ui.FormatDuration(e.MS)
+		} else {
+			val = float64(e.Count)
+			suffix = ui.FormatNumber(e.Count) + " runs"
+		}
+		name := nameW.Render(ui.Truncate(e.Name, 15))
+		bar := ui.ProgressBar(val, maxVal, 12)
+		lines = append(lines, "  "+name+bar+ui.Muted.Render("  "+suffix))
 	}
-	return ui.Box.Render(strings.Join(lines, "\n"))
+	return strings.Join(lines, "\n")
 }
