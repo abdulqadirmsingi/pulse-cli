@@ -78,6 +78,16 @@ func firstPositional(args []string) string {
 	return ""
 }
 
+// stripQuotes removes a single layer of surrounding single or double quotes.
+func stripQuotes(s string) string {
+	if len(s) >= 2 {
+		if (s[0] == '\'' && s[len(s)-1] == '\'') || (s[0] == '"' && s[len(s)-1] == '"') {
+			return s[1 : len(s)-1]
+		}
+	}
+	return s
+}
+
 // flagValue returns the value of a named flag, e.g. -m "message" or --message=foo.
 func flagValue(args []string, names ...string) string {
 	nameSet := make(map[string]bool, len(names))
