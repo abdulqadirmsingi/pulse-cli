@@ -34,6 +34,7 @@ func Open(path string) (*DB, error) {
 		conn.Close()
 		return nil, fmt.Errorf("running migrations: %w", err)
 	}
+	db.prune()
 	return db, nil
 }
 
@@ -45,6 +46,7 @@ func (db *DB) migrate() error {
 	db.conn.Exec(`PRAGMA journal_mode=WAL`)
 	db.conn.Exec(`PRAGMA synchronous=NORMAL`)
 	db.conn.Exec(`PRAGMA foreign_keys=ON`)
+	db.conn.Exec(`PRAGMA auto_vacuum=INCREMENTAL`)
 
 	stmts := []string{
 		`CREATE TABLE IF NOT EXISTS commands (
@@ -62,7 +64,7 @@ func (db *DB) migrate() error {
 		`CREATE INDEX IF NOT EXISTS idx_cmd_project_created ON commands(project, created_at)`,
 		`CREATE TABLE IF NOT EXISTS git_events (
 			id          INTEGER  PRIMARY KEY AUTOINCREMENT,
-			command_id  INTEGER  REFERENCES commands(id),
+			command_id  INTEGER  REFERENCES commands(id) ON DELETE CASCADE,
 			subcommand  TEXT     NOT NULL,
 			branch      TEXT     NOT NULL DEFAULT '',
 			is_force    INTEGER  NOT NULL DEFAULT 0,
@@ -82,4 +84,15 @@ func (db *DB) migrate() error {
 	// additive column migrations for existing databases
 	db.conn.Exec(`ALTER TABLE commands ADD COLUMN noise INTEGER NOT NULL DEFAULT 0`)
 	return nil
+}
+
+// prune deletes old rows and reclaims disk space. Noise commands are kept for
+// 7 days; all other commands for 90 days. git_events are pruned via CASCADE
+// when their parent command row is deleted.
+func (db *DB) prune() {
+	db.conn.Exec(`DELETE FROM commands WHERE noise = 1 AND created_at < datetime('now', '-7 days')`)
+	db.conn.Exec(`DELETE FROM commands WHERE noise = 0 AND created_at < datetime('now', '-90 days')`)
+	db.conn.Exec(`DELETE FROM git_events WHERE command_id NOT IN (SELECT id FROM commands)`)
+	db.conn.Exec(`PRAGMA incremental_vacuum`)
+	db.conn.Exec(`PRAGMA wal_checkpoint(PASSIVE)`)
 }
