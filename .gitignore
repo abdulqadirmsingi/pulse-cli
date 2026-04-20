@@ -2,3 +2,5 @@ dist/
 pulse
 pulse.new
 *.db
+RULES.md
+rules.md

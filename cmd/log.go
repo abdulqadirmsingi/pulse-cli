@@ -80,7 +80,13 @@ func runLog(_ *cobra.Command, _ []string) error {
 				_ = database.InsertGitEvent(id, ev.Subcommand, ev.Branch, ev.Remote, ev.Message, ev.IsForce)
 				// only surface feedback when the git command itself succeeded
 				if logFlagExit == 0 {
-					printViolations(rules.Default().Evaluate(ev))
+					engine := rules.Default()
+					violations := engine.Evaluate(ev)
+					if len(violations) > 0 {
+						printViolations(violations)
+					} else {
+						printPraise(engine.EvaluatePraise(ev))
+					}
 				}
 			}
 		}
@@ -89,6 +95,13 @@ func runLog(_ *cobra.Command, _ []string) error {
 
 	_ = database.InsertCommand(cmd, dir, project, logFlagExit, logFlagMS, noise)
 	return nil
+}
+
+func printPraise(praises []rules.Praise) {
+	for _, p := range praises {
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "  "+ui.Success.Render(p.Message))
+	}
 }
 
 func printViolations(violations []rules.Violation) {
