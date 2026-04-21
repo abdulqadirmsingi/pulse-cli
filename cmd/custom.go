@@ -17,8 +17,6 @@ import (
 
 var validCmdName = regexp.MustCompile(`^[a-z][a-z0-9-]{0,30}$`)
 
-// builtinNames is the complete set of names reserved by pulse.
-// Any addition to rootCmd must also be added here to stay protected.
 var builtinNames = map[string]bool{
 	"cmd": true, "dash": true, "doctor": true, "fav": true, "f": true,
 	"history": true, "hooks": true, "init": true, "log": true,
@@ -56,9 +54,6 @@ func init() {
 	cmdCmd.AddCommand(cmdRmCmd)
 }
 
-// RegisterCustomCommands loads every user-defined command from the database
-// and registers it as a cobra subcommand of rootCmd. Call this before Execute()
-// so that `pulse <name>` routes correctly.
 func RegisterCustomCommands() {
 	cfg, err := config.Load()
 	if err != nil {
@@ -112,7 +107,6 @@ func runCustomCommand(shellCmd string, args []string) error {
 	return nil
 }
 
-// shellescape single-quote-escapes s so it is safe to embed in a sh -c string.
 func shellescape(s string) string {
 	if s == "" {
 		return "''"
