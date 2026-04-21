@@ -218,6 +218,11 @@ func (db *DB) SearchCommands(query string, days, limit int) ([]CommandRow, error
 }
 
 func (d *DB) ResetCommands() (int64, error) {
+	// delete git_events first to handle databases created before ON DELETE CASCADE
+	// was added to the schema — those tables have a plain FK that blocks the parent delete
+	if _, err := d.conn.Exec(`DELETE FROM git_events`); err != nil {
+		return 0, err
+	}
 	res, err := d.conn.Exec(`DELETE FROM commands`)
 	if err != nil {
 		return 0, err

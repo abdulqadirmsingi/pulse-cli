@@ -11,6 +11,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/devpulse-cli/devpulse/internal/config"
 	"github.com/devpulse-cli/devpulse/internal/ui"
@@ -120,8 +121,11 @@ func fetchLatestRelease() (*ghRelease, error) {
 	return &rel, json.NewDecoder(resp.Body).Decode(&rel)
 }
 
+const maxBinaryBytes = 100 * 1024 * 1024 // 100 MB hard cap
+
 func downloadAndReplace(url string) error {
-	resp, err := http.Get(url) // #nosec G107 — URL sourced from GitHub API response
+	client := &http.Client{Timeout: 120 * time.Second}
+	resp, err := client.Get(url) // #nosec G107 — URL sourced from GitHub API response
 	if err != nil {
 		return err
 	}
@@ -144,7 +148,7 @@ func downloadAndReplace(url string) error {
 			return err
 		}
 		if hdr.Name == "pulse" || strings.HasSuffix(hdr.Name, "/pulse") {
-			data, err = io.ReadAll(tr)
+			data, err = io.ReadAll(io.LimitReader(tr, maxBinaryBytes))
 			if err != nil {
 				return err
 			}

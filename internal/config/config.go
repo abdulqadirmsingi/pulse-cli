@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-const AppVersion = "0.2.7"
+const AppVersion = "0.2.8"
 
 type Config struct {
 	DataDir string // ~/.devpulse/
