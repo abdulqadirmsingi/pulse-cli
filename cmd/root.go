@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/devpulse-cli/devpulse/internal/config"
-	"github.com/devpulse-cli/devpulse/internal/ui"
-	"github.com/devpulse-cli/devpulse/internal/updater"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/updater"
 	"github.com/spf13/cobra"
 )
 

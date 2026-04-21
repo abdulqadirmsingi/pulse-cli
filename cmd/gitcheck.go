@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	igit "github.com/devpulse-cli/devpulse/internal/git"
-	"github.com/devpulse-cli/devpulse/internal/rules"
-	"github.com/devpulse-cli/devpulse/internal/ui"
+	igit "github.com/abdulqadirmsingi/pulse-cli/internal/git"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/rules"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
 	"github.com/spf13/cobra"
 )
 

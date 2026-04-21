@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/devpulse-cli/devpulse/internal/ui"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
 	"github.com/spf13/cobra"
 )
 

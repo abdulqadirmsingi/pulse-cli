@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/devpulse-cli/devpulse/internal/config"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
 )
 
 type updateCache struct {

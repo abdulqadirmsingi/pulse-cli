@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/devpulse-cli/devpulse/internal/config"
-	"github.com/devpulse-cli/devpulse/internal/db"
-	"github.com/devpulse-cli/devpulse/internal/ui"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
 	"github.com/spf13/cobra"
 )
 

@@ -4,8 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/devpulse-cli/devpulse/internal/config"
-	"github.com/devpulse-cli/devpulse/internal/db"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
 	"github.com/spf13/cobra"
 )
 

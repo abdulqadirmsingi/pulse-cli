@@ -82,6 +82,31 @@ Requires Go 1.21+.
 | `pulse git-guard off` | disable the guard |
 | `pulse git-guard status` | check if the guard is active |
 
+### Custom commands
+
+Make your own `pulse` shortcuts for anything you run often:
+
+| Command | What it does |
+|---------|-------------|
+| `pulse cmd add <name> "<command>"` | create a new shortcut |
+| `pulse cmd` or `pulse c` | list all your shortcuts |
+| `pulse cmd rm <name>` | remove a shortcut |
+| `pulse <name>` | run it |
+
+**Quotes are optional** — both forms work:
+```bash
+pulse cmd add simulator "open -a Simulator"
+pulse cmd add simulator open -a Simulator
+```
+
+Any extra args you pass get forwarded to the underlying command:
+```bash
+pulse cmd add open-project "open -a Cursor"
+pulse open-project .           # runs: open -a Cursor .
+```
+
+Shortcuts can't shadow built-in pulse commands (`stats`, `history`, `reset`, etc.). Custom command names are lowercase letters, digits, and hyphens only.
+
 ### Maintenance
 
 | Command | What it does |
@@ -106,18 +131,21 @@ This is where Pulse goes beyond a tracker. After every git command, Pulse evalua
 | Direct commit to main | `git commit` while on `main` or `master` | ⚠️ Warn |
 | Direct push to main | `git push origin main` without a PR | ⚠️ Warn |
 | Vague branch name | `git checkout -b fix` / `wip` / `temp` / `test` | ⚠️ Warn |
+| Branch missing prefix | `git switch -c my-feature` (no `feat/fix/chore` prefix) | ⚠️ Suggest |
 | Vague commit message | `git commit -m "update"` / `"fix"` / `"wip"` | ⚠️ Warn |
 | Non-conventional commit | message without `feat:` / `fix:` / `chore:` prefix | ⚠️ Warn |
 | Friday afternoon push | `git push` on Friday after 4pm | ⚠️ Warn |
 | Bare merge | `git merge` with no branch specified | ⚠️ Warn |
 
+Branch naming works with both `git checkout -b` and `git switch -c`.
+
 ### What good looks like
 
 ```bash
-# good branch names
+# good branch names — works with both checkout and switch
 git checkout -b feat/user-auth
-git checkout -b fix/null-pointer-login
-git checkout -b chore/update-dependencies
+git switch -c fix/null-pointer-login
+git switch -c chore/update-dependencies
 
 # good commit messages (conventional format)
 git commit -m "feat: add OAuth login flow"
@@ -143,6 +171,11 @@ $ git checkout -b wip
 
   ⚠️  branch name "wip" is too vague
      try: feat/your-feature, fix/the-bug, chore/what-you-did
+
+$ git switch -c login-bug
+
+  ⚠️  "login-bug" is missing a type prefix
+     how about: fix/login-bug
 
 $ git push origin main
 

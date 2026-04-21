@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/devpulse-cli/devpulse/internal/git"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/git"
 )
 
 var commitPraises = []string{

@@ -3,7 +3,7 @@ package rules
 import (
 	"testing"
 
-	"github.com/devpulse-cli/devpulse/internal/git"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/git"
 )
 
 func TestForceMainRule(t *testing.T) {

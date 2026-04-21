@@ -82,6 +82,12 @@ func (db *DB) migrate() error {
 			alias      TEXT     NOT NULL DEFAULT '',
 			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		)`,
+		`CREATE TABLE IF NOT EXISTS custom_commands (
+			id          INTEGER  PRIMARY KEY AUTOINCREMENT,
+			name        TEXT     NOT NULL UNIQUE,
+			command     TEXT     NOT NULL,
+			created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		)`,
 	}
 	for _, s := range stmts {
 		if _, err := db.conn.Exec(s); err != nil {

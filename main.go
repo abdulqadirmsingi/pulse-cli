@@ -1,7 +1,8 @@
 package main
 
-import "github.com/devpulse-cli/devpulse/cmd"
+import "github.com/abdulqadirmsingi/pulse-cli/cmd"
 
 func main() {
+	cmd.RegisterCustomCommands()
 	cmd.Execute()
 }

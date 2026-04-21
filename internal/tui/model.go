@@ -4,7 +4,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/devpulse-cli/devpulse/internal/db"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
 )
 
 // tab is a named type so we get compile-time safety: you can't accidentally

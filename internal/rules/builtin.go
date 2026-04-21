@@ -4,7 +4,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/devpulse-cli/devpulse/internal/git"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/git"
 )
 
 var mainBranches = map[string]bool{"main": true, "master": true}
@@ -132,7 +132,8 @@ func (r *VagueCommitRule) Evaluate(e *git.Event) *Violation {
 
 func hasCreateFlag(args []string) bool {
 	for _, a := range args {
-		if a == "-b" || a == "-B" || a == "--orphan" {
+		// -b/-B: git checkout; -c/-C: git switch (the modern form)
+		if a == "-b" || a == "-B" || a == "-c" || a == "-C" || a == "--orphan" {
 			return true
 		}
 	}
@@ -140,12 +141,112 @@ func hasCreateFlag(args []string) bool {
 }
 
 // newBranchName returns the new branch name from checkout/switch args.
-// For `git checkout -b feat/x` and `git switch -b feat/x` it returns "feat/x".
+// Handles both `git checkout -b feat/x` and `git switch -c feat/x`.
 func newBranchName(args []string) string {
 	for i, a := range args {
-		if (a == "-b" || a == "-B") && i+1 < len(args) {
+		if (a == "-b" || a == "-B" || a == "-c" || a == "-C") && i+1 < len(args) {
 			return args[i+1]
 		}
 	}
 	return ""
+}
+
+// BranchConventionRule nudges users toward type-prefixed branch names when
+// their branch doesn't follow the feat/fix/chore pattern but isn't just a
+// vague single word (BranchNameRule handles that case separately).
+type BranchConventionRule struct{}
+
+func (r *BranchConventionRule) Name() string { return "branch-convention" }
+
+func (r *BranchConventionRule) Evaluate(e *git.Event) *Violation {
+	if e.Subcommand != "checkout" && e.Subcommand != "switch" {
+		return nil
+	}
+	if !hasCreateFlag(e.Args) {
+		return nil
+	}
+	branch := newBranchName(e.Args)
+	if branch == "" || mainBranches[branch] {
+		return nil
+	}
+	lower := strings.ToLower(branch)
+
+	// already follows convention — GoodBranchPraise handles praise
+	for _, p := range goodBranchPrefixes {
+		if strings.HasPrefix(lower, p) {
+			return nil
+		}
+	}
+	// has a slash structure → user is trying to follow convention, don't nag
+	if strings.Contains(branch, "/") {
+		return nil
+	}
+	// vague single words → BranchNameRule handles those
+	if vagueNames[lower] {
+		return nil
+	}
+
+	suggestion := suggestBranchPrefix(branch)
+	return &Violation{
+		Severity: SeverityWarn,
+		Rule:     r.Name(),
+		Message:  `"` + branch + `" is missing a type prefix`,
+		Fix:      "how about: " + suggestion,
+	}
+}
+
+// suggestBranchPrefix guesses the right conventional prefix for a branch name
+// and returns a full suggestion like "fix/login-bug".
+func suggestBranchPrefix(branch string) string {
+	lower := strings.ToLower(branch)
+	slug := toBranchSlug(branch)
+
+	words := strings.FieldsFunc(lower, func(r rune) bool {
+		return r == '-' || r == '_' || r == '/'
+	})
+	wordSet := make(map[string]bool, len(words))
+	for _, w := range words {
+		wordSet[w] = true
+	}
+
+	prefix := "feat"
+	switch {
+	case wordSet["fix"] || wordSet["bug"] || wordSet["bugfix"] || wordSet["patch"]:
+		prefix = "fix"
+	case wordSet["hotfix"] || wordSet["urgent"]:
+		prefix = "hotfix"
+	case wordSet["doc"] || wordSet["docs"] || wordSet["readme"]:
+		prefix = "docs"
+	case wordSet["chore"] || wordSet["cleanup"] || wordSet["bump"] || wordSet["deps"]:
+		prefix = "chore"
+	case wordSet["test"] || wordSet["spec"]:
+		prefix = "test"
+	case wordSet["refactor"] || wordSet["rewrite"]:
+		prefix = "refactor"
+	case wordSet["perf"] || wordSet["performance"]:
+		prefix = "perf"
+	}
+
+	// strip redundant leading type word (e.g. "fix-login-bug" → "fix/login-bug")
+	if strings.HasPrefix(slug, prefix+"-") {
+		slug = slug[len(prefix)+1:]
+	}
+	return prefix + "/" + slug
+}
+
+// toBranchSlug converts a branch name to clean kebab-case.
+func toBranchSlug(s string) string {
+	s = strings.ToLower(s)
+	var b strings.Builder
+	prevHyphen := false
+	for _, r := range s {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			b.WriteRune(r)
+			prevHyphen = false
+		} else if (r == '-' || r == '_' || r == ' ') && !prevHyphen && b.Len() > 0 {
+			b.WriteRune('-')
+			prevHyphen = true
+		}
+	}
+	return strings.TrimRight(b.String(), "-")
 }

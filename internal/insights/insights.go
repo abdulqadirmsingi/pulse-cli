@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/devpulse-cli/devpulse/internal/db"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
 )
 
 // Level controls the icon and tone of an insight.

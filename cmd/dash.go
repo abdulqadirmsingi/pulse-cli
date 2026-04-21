@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/devpulse-cli/devpulse/internal/config"
-	"github.com/devpulse-cli/devpulse/internal/db"
-	"github.com/devpulse-cli/devpulse/internal/tui"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/tui"
 	"github.com/spf13/cobra"
 )
 

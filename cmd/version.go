@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/devpulse-cli/devpulse/internal/config"
-	"github.com/devpulse-cli/devpulse/internal/ui"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
 	"github.com/spf13/cobra"
 )
 

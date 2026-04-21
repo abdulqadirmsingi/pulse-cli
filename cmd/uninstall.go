@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/devpulse-cli/devpulse/internal/ui"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
 	"github.com/spf13/cobra"
 )
 
@@ -74,7 +74,7 @@ func runUninstall(_ *cobra.Command, _ []string) error {
 	fmt.Println(ui.Box.Render(
 		ui.Muted.Render("Pulse has been removed 👋")+"\n\n"+
 			ui.Muted.Render("if u ever wanna come back:")+"\n"+
-			cyan.Render("  go install github.com/devpulse-cli/devpulse@latest")+"\n"+
+			cyan.Render("  go install github.com/abdulqadirmsingi/pulse-cli@latest")+"\n"+
 			cyan.Render("  pulse init"),
 	))
 	fmt.Println()

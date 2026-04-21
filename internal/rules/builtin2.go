@@ -5,7 +5,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/devpulse-cli/devpulse/internal/git"
+	"github.com/abdulqadirmsingi/pulse-cli/internal/git"
 )
 
 type ConventionalCommitRule struct{}
