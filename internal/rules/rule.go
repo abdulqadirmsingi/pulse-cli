@@ -50,6 +50,7 @@ func Default() *Engine {
 			&DirectMainRule{},
 			&DirectPushMainRule{},
 			&BranchNameRule{},
+			&BranchConventionRule{},
 			&VagueCommitRule{},
 			&ConventionalCommitRule{},
 			&FridayAfternoonRule{},
