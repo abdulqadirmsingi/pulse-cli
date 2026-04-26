@@ -93,6 +93,8 @@ func streakRule(days int) Insight {
 		return Insight{LevelFire, fmt.Sprintf("%d day streak — ur literally built different rn", days)}
 	case days >= 7:
 		return Insight{LevelFire, fmt.Sprintf("%d day streak — on fire fr fr", days)}
+	case days >= 3:
+		return Insight{LevelGood, fmt.Sprintf("%d day streak — momentum is loading nicely", days)}
 	default:
 		return Insight{LevelGood, fmt.Sprintf("%d day streak — just getting started, keep pushing", days)}
 	}
@@ -102,6 +104,8 @@ func successRule(rate float64) Insight {
 	switch {
 	case rate >= 97:
 		return Insight{LevelFire, fmt.Sprintf("%.1f%% success rate — typing with purpose fr", rate)}
+	case rate >= 94:
+		return Insight{LevelFire, fmt.Sprintf("%.1f%% success rate — calm hands, clean commands", rate)}
 	case rate >= 90:
 		return Insight{LevelGood, fmt.Sprintf("%.1f%% success rate — clean execution, solid", rate)}
 	case rate >= 80:
@@ -117,6 +121,8 @@ func timeRule(ms int64) Insight {
 		return Insight{LevelHeadsUp, "grinding hard — hydrate and take breaks bestie 🥤"}
 	case hours >= 4:
 		return Insight{LevelFire, "solid session, ur putting in real hours 🔥"}
+	case hours >= 2:
+		return Insight{LevelGood, "focused block detected — that is real progress"}
 	case ms < 60_000:
 		return Insight{LevelRoast, "barely any time logged — just opened terminal to flex? 💀"}
 	}
@@ -139,6 +145,9 @@ func topCommandRule(top string) Insight {
 		"docker":  {LevelGood, "container enjoyer detected — cloud native era"},
 		"kubectl": {LevelFire, "k8s navigator — ur in the deep end fr"},
 		"make":    {LevelGood, "makefile enjoyer — old school but it works"},
+		"rg":      {LevelFire, "ripgrep user — fast search, sharp mind"},
+		"cargo":   {LevelGood, "rustacean energy detected — fearless and slightly intense"},
+		"bun":     {LevelGood, "bun in the toolkit — speedrunner vibes"},
 	}
 	if i, ok := messages[strings.ToLower(top)]; ok {
 		return i

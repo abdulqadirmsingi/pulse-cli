@@ -18,7 +18,7 @@ import (
 var validCmdName = regexp.MustCompile(`^[a-z][a-z0-9-]{0,30}$`)
 
 var builtinNames = map[string]bool{
-	"c": true, "cmd": true, "dash": true, "doctor": true, "fav": true, "f": true,
+	"ask": true, "backup": true, "export": true, "c": true, "cmd": true, "dash": true, "doctor": true, "fav": true, "f": true,
 	"history": true, "hooks": true, "init": true, "log": true,
 	"projects": true, "reset": true, "search": true, "s": true,
 	"stats": true, "today": true, "uninstall": true, "update": true,

@@ -14,7 +14,7 @@ builds:
     binary: pulse
     ldflags:
       - -s -w
-      - -X github.com/devpulse-cli/devpulse/internal/config.AppVersion={{.Version}}
+      - -X github.com/abdulqadirmsingi/pulse-cli/internal/config.AppVersion={{.Version}}
 
 archives:
   - name_template: "pulse_{{ .Os }}_{{ .Arch }}"

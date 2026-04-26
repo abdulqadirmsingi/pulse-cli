@@ -7,7 +7,7 @@
 
 BINARY      = pulse
 VERSION     = $(shell grep AppVersion internal/config/config.go | sed 's/.*"\(.*\)"/\1/')
-LDFLAGS     = -ldflags="-X github.com/devpulse-cli/devpulse/internal/config.AppVersion=$(VERSION) -s -w"
+LDFLAGS     = -ldflags="-X github.com/abdulqadirmsingi/pulse-cli/internal/config.AppVersion=$(VERSION) -s -w"
 INSTALL_DIR = $(HOME)/.local/bin
 
 .PHONY: build install uninstall clean

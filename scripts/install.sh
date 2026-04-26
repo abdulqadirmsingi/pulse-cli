@@ -34,6 +34,7 @@ SHELL_RC=""
 case "$SHELL" in
     */zsh)  SHELL_RC="$HOME/.zshrc" ;;
     */bash) SHELL_RC="$HOME/.bashrc" ;;
+    */fish) SHELL_RC="$HOME/.config/fish/config.fish" ;;
     *)      SHELL_RC="$HOME/.bashrc" ;;
 esac
 
@@ -64,8 +65,13 @@ echo -e "  ${GREEN}✓${R}  binary installed to ${INSTALL_DIR}/${BINARY}"
 
 # ── Add ~/.local/bin to PATH in shell config if missing ───────────────
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
+    mkdir -p "$(dirname "$SHELL_RC")"
     echo "" >> "$SHELL_RC"
-    echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$SHELL_RC"
+    if [[ "$SHELL_RC" == *"config.fish" ]]; then
+        echo "fish_add_path \$HOME/.local/bin" >> "$SHELL_RC"
+    else
+        echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$SHELL_RC"
+    fi
     echo -e "  ${GREEN}✓${R}  added ~/.local/bin to PATH in ${SHELL_RC}"
     export PATH="$INSTALL_DIR:$PATH"
 fi
