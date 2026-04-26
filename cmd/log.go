@@ -56,10 +56,12 @@ func runLog(_ *cobra.Command, _ []string) error {
 
 	cfg, err := config.Load()
 	if err != nil {
+		recordHookError("config", err)
 		return nil
 	}
 	database, err := db.Open(cfg.DBPath)
 	if err != nil {
+		recordHookError("database", err)
 		return nil
 	}
 	defer database.Close()
@@ -76,6 +78,7 @@ func runLog(_ *cobra.Command, _ []string) error {
 	if igit.IsGit(cmd) {
 		id, err := database.InsertCommandGetID(cmd, dir, project, logFlagExit, logFlagMS, noise)
 		if err == nil {
+			clearHookError()
 			if ev := igit.Parse(cmd, dir); ev != nil {
 				_ = database.InsertGitEvent(id, ev.Subcommand, ev.Branch, ev.Remote, ev.Message, ev.IsForce)
 				// only surface feedback when the git command itself succeeded
@@ -89,11 +92,17 @@ func runLog(_ *cobra.Command, _ []string) error {
 					}
 				}
 			}
+		} else {
+			recordHookError("insert git command", err)
 		}
 		return nil
 	}
 
-	_ = database.InsertCommand(cmd, dir, project, logFlagExit, logFlagMS, noise)
+	if err := database.InsertCommand(cmd, dir, project, logFlagExit, logFlagMS, noise); err != nil {
+		recordHookError("insert command", err)
+		return nil
+	}
+	clearHookError()
 	return nil
 }
 
