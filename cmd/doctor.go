@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 
@@ -53,9 +53,24 @@ func runDoctor(_ *cobra.Command, _ []string) error {
 	if dbErr != nil {
 		fail("database error: " + dbErr.Error())
 	} else {
-		stats, _ := database.GetStats(36500) // effectively all-time
+		stats, statsErr := database.GetStats(36500) // effectively all-time
+		if statsErr != nil {
+			fail("database stats error: " + statsErr.Error())
+		} else {
+			pass(fmt.Sprintf("database OK — %s commands recorded total", ui.FormatNumber(stats.TotalCommands)))
+		}
+		if last, ok, err := database.LastCommandAt(); err != nil {
+			fail("could not read last command time: " + err.Error())
+		} else if ok {
+			pass("last command logged at " + last.Format("Jan 2 15:04:05"))
+		} else {
+			pass("no commands logged yet — open a new terminal or source your shell config")
+		}
 		database.Close()
-		pass(fmt.Sprintf("database OK — %s commands recorded total", ui.FormatNumber(stats.TotalCommands)))
+	}
+
+	if hookErr := strings.TrimSpace(readHookError()); hookErr != "" {
+		fail("last hook write failed — " + hookErr)
 	}
 
 	shell := detectShell()

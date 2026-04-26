@@ -7,10 +7,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 
@@ -72,10 +72,10 @@ func runInit(_ *cobra.Command, _ []string) error {
 	fmt.Println()
 	cyan := lipgloss.NewStyle().Foreground(lipgloss.Color("#00D4FF"))
 	fmt.Println(ui.Box.Render(
-		ui.Success.Render("Your Pulse is ready to slay 🔥")+"\n\n"+
-			ui.Muted.Render("activate by running:")+"\n"+
-			cyan.Render("  source "+hookFile)+"\n\n"+
-			ui.Muted.Render("then try:")+"\n"+
+		ui.Success.Render("Your Pulse is ready to slay 🔥") + "\n\n" +
+			ui.Muted.Render("activate by running:") + "\n" +
+			cyan.Render("  source "+hookFile) + "\n\n" +
+			ui.Muted.Render("then try:") + "\n" +
 			cyan.Render("  pulse stats"),
 	))
 	fmt.Println()

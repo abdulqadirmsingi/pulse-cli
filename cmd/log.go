@@ -144,7 +144,7 @@ var noiseCommands = map[string]bool{
 	"cd": true, "pwd": true,
 	"exit": true, "logout": true,
 	"history": true,
-	"cat": true, "less": true, "more": true,
+	"cat":     true, "less": true, "more": true,
 	"man": true,
 }
 
