@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 

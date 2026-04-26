@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/qa"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 

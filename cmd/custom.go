@@ -8,10 +8,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/ui"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 
@@ -199,9 +199,9 @@ func runCmdList(_ *cobra.Command, _ []string) error {
 	fmt.Println(ui.Title.Render(fmt.Sprintf("⚡  custom commands  ·  %d", len(commands))))
 	fmt.Println()
 
-	nameStyle  := lipgloss.NewStyle().Foreground(ui.ColorCyan)
+	nameStyle := lipgloss.NewStyle().Foreground(ui.ColorCyan)
 	arrowStyle := lipgloss.NewStyle().Foreground(ui.ColorGray)
-	cmdStyle   := lipgloss.NewStyle().Foreground(ui.ColorGray)
+	cmdStyle := lipgloss.NewStyle().Foreground(ui.ColorGray)
 
 	for _, c := range commands {
 		fmt.Printf("  %s  %s  %s\n",

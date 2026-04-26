@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/config"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/tui"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 

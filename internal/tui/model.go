@@ -3,8 +3,8 @@ package tui
 import (
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/abdulqadirmsingi/pulse-cli/internal/db"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 // tab is a named type so we get compile-time safety: you can't accidentally
