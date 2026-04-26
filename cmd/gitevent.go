@@ -37,10 +37,12 @@ func runGitEvent(_ *cobra.Command, args []string) error {
 
 	cfg, err := config.Load()
 	if err != nil {
+		recordHookError("git-event config", err)
 		return nil
 	}
 	database, err := db.Open(cfg.DBPath)
 	if err != nil {
+		recordHookError("git-event database", err)
 		return nil
 	}
 	defer database.Close()
@@ -55,9 +57,14 @@ func runGitEvent(_ *cobra.Command, args []string) error {
 	cmd := "git " + subcommand
 	id, err := database.InsertCommandGetID(cmd, dir, project, 0, 0, false)
 	if err != nil {
+		recordHookError("git-event insert command", err)
 		return nil
 	}
 
-	_ = database.InsertGitEvent(id, subcommand, gitEventBranch, "", gitEventMessage, false)
+	if err := database.InsertGitEvent(id, subcommand, gitEventBranch, "", gitEventMessage, false); err != nil {
+		recordHookError("git-event insert metadata", err)
+		return nil
+	}
+	clearHookError()
 	return nil
 }
